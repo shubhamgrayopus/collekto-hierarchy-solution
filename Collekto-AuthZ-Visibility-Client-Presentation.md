@@ -132,7 +132,7 @@ It is **configured** as: *this user can see cases matching these conditions*.
 |------|---------|
 | Values in the **same** column | **OR** (e.g. Bucket B1 or B2) |
 | Different columns in **one** row | **AND** (e.g. Product PL **and** Branch B1) |
-| Multiple rows for the **same** user | **OR** (union of books) |
+| Multiple rows for the **same** user | **OR** (union of Command Tower rules) |
 
 **Examples**
 
@@ -141,7 +141,7 @@ It is **configured** as: *this user can see cases matching these conditions*.
 | Telecaller T1 | Self assigned = Yes | Only cases assigned to T1 |
 | Field Agent F1 | Self assigned = Yes | Only cases assigned to F1 |
 | Manager M1 | Assigned users = T1 \| T2 \| F1 | Cases assigned to those users |
-| Manager M2 | Product = PL, Bucket = B1 \| B2, Agency = Inhouse | That product/bucket/agency book |
+| Manager M2 | Product = PL, Bucket = B1 \| B2, Agency = Inhouse | That Command Tower scope |
 | Tenant Admin | All cases = Yes | All cases for the tenant (explicit) |
 
 ### 3.3 What we are deliberately not building in this phase
@@ -151,7 +151,7 @@ It is **configured** as: *this user can see cases matching these conditions*.
 - A separate assignment/routing engine (allocate/reallocate remains its own capability)  
 - Generic policy languages (ABAC/ReBAC frameworks)
 
-Hierarchy-like outcomes (multi-manager teams, area books) are achieved by **visibility configuration**, not by forcing one tree on every customer.
+Hierarchy-like outcomes (multi-manager teams, Command Tower scope) are achieved by **visibility configuration**, not by forcing one tree on every customer.
 
 ---
 
@@ -279,7 +279,7 @@ Cache invalidated → all apps use new rules
 |-----------------|--------------|
 | New telecaller / field agent | Create profile in DB + Self-assigned visibility row (default or via workbook) |
 | Change manager’s team | Update Assigned Users in workbook → validate → publish |
-| Expand product/bucket book | Add Product/Bucket/Agency on manager (or CM) rows → publish |
+| Expand product/bucket Command Tower rules | Add Product/Bucket/Agency on manager (or CM) rows → publish |
 | Tenant admin | Explicit All Cases = Yes |
 | Disable user | Deactivate profile in database (identity); rules unused |
 
@@ -315,7 +315,7 @@ Cache invalidated → all apps use new rules
 |------|--------|
 | Team / active loan lists | Scoped by manager visibility rules (typically Assigned Users and/or product–bucket–agency) |
 | Portfolio picker | Demoted or removed as access control |
-| Seeing a FA/TC book | Only if covered by manager’s visibility configuration |
+| Seeing a FA/TC Command Tower scope | Only if covered by manager’s visibility configuration |
 | Assigning a loan | Still assignment; does not replace visibility maintenance |
 | Force-update / API contract | Same behaviour on iOS and Android via shared backend |
 
@@ -334,7 +334,7 @@ Cache invalidated → all apps use new rules
 | Profile | Typical visibility | What changes for them |
 |---------|--------------------|-----------------------|
 | Tenant Admin (primary) | All cases (explicit) | Must be explicitly configured; blank ≠ all |
-| NCM / ZCM / RCM / ACM style users | Configured book (agency / product / bucket / assignees) | Scope comes from rules, not from title alone |
+| NCM / ZCM / RCM / ACM style users | Configured Command Tower rules (agency / product / bucket / assignees) | Scope comes from rules, not from title alone |
 | Super Manager | Configured rules | Less portfolio membership maintenance |
 | Manager | Assigned users ± dimensions | Web + Manager app lists follow rules |
 | Telecaller | Self | Web lists follow assignee |
@@ -357,7 +357,7 @@ Cache invalidated → all apps use new rules
 ## 7. Seeding (first go-live)
 
 1. Ensure all active users exist in the **database** with correct roles.  
-2. Generate an initial visibility workbook from current effective access (manager teams, self for TC/FA, all-cases for primary admin, books for area/national style users).  
+2. Generate an initial visibility workbook from current effective access (manager teams, self for TC/FA, all-cases for primary admin, Command Tower rules for area/national style users).  
 3. Upload → validate → preview → publish **Version 1**.  
 4. Compare sample users’ case counts (old vs new) before cutting over APIs.  
 5. Switch loan/case APIs (web + mobile) to enforce visibility only.  
@@ -384,7 +384,7 @@ User opens cases (Web / Manager / Field)
 Ops edits Excel → Upload → Validate → Preview → Publish → Apps pick up new version
 ```
 
-### 8.3 Example manager book
+### 8.3 Example manager Command Tower rules
 
 ```
 M1 rule A: Assigned users T1, T2, F1

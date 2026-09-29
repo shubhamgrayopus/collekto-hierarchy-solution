@@ -20,7 +20,7 @@ flowchart TB
   U[User opens CRM or mobile app]
   I[IDENTITY<br/>Who are you?<br/>Database profile + session]
   A[AUTHORIZATION<br/>What can you do?<br/>Role → permissions]
-  V[VISIBILITY<br/>Which cases?<br/>Book rules + Team rules]
+  V[VISIBILITY<br/>Which cases?<br/>Command Tower rules + Team rules]
   D[(Loans / Cases)]
   U --> I --> A --> V --> D
 ```
@@ -43,7 +43,7 @@ flowchart LR
     M2[Manager M1]
     VR[Visibility rules]
     AU[Assigned Users = TCs and FAs]
-    BR[Optional Product + Bucket book]
+    BR[Optional Product + Bucket Command Tower rules]
     M2 --> VR
     VR --> AU
     VR --> BR
@@ -55,23 +55,23 @@ flowchart LR
 
 ---
 
-### 0.3 Book rules vs team rules
+### 0.3 Command Tower rules vs team rules
 
-![Book rules versus team rules](assets/diagram-book-vs-team.png)
+![Command Tower rules versus team rules](assets/diagram-ct-vs-team.png)
 
 ```mermaid
 flowchart TB
   Loan[Loan on database<br/>Product · Bucket · Agency · Assignee]
-  Book[BOOK RULES<br/>Match Product / Bucket / Agency]
+  CTRules[COMMAND TOWER RULES<br/>Match Product / Bucket / Agency]
   Team[TEAM RULES<br/>Assignee in Assigned Users<br/>or Self]
   See[User can see this loan]
-  Loan --> Book --> See
+  Loan --> CTRules --> See
   Loan --> Team --> See
 ```
 
 | Rule type | Looks at | Typical for | Example |
 |-----------|----------|-------------|---------|
-| **Book rules** | Attributes on the **loan** | ACM / RCM / ZCM / NCM | Agency=Inhouse AND Product=PL AND Bucket=B1\|B2 |
+| **Command Tower rules** | Attributes on the **loan** | ACM / RCM / ZCM / NCM | Agency=Inhouse AND Product=PL AND Bucket=B1\|B2 |
 | **Team rules** | **Who** is assigned | Manager; or ACM if TC/FA report directly | Assigned Users = T1\|F1 |
 | **Self** | Assignee = me | Telecaller / Field Agent | Self Assigned = Y |
 | **All Cases** | Whole tenant | Primary Tenant Admin | All Cases = Y |
@@ -93,11 +93,11 @@ sequenceDiagram
   participant T1 as Telecaller T1
   participant M1 as Manager M1
   LMS->>Loan: Stamp Product, Bucket, Agency
-  Note over ACM,Loan: ACM sees via BOOK rules even if unassigned
+  Note over ACM,Loan: ACM sees via Command Tower rules even if unassigned
   Alloc->>Loan: Assign worker = T1
   Loan-->>T1: T1 sees via SELF
   Loan-->>M1: M1 sees if T1 in Assigned Users
-  Loan-->>ACM: ACM still sees via BOOK rules
+  Loan-->>ACM: ACM still sees via Command Tower rules
 ```
 
 **Important:** the loan is assigned to the **telecaller/FA only**. Managers and ACMs **see** it through Visibility — they are not dual-assignees on the loan.
@@ -116,7 +116,7 @@ flowchart TB
   subgraph st [Sub-tenant ACM / RCM / ZCM / NCM]
     CT[Command Tower subtree]
     PR[People resolver]
-    DD2[Child CMs · Managers · TC · FA<br/>ONLY in that book]
+    DD2[Child CMs · Managers · TC · FA<br/>ONLY in that Command Tower scope]
     CT --> PR --> DD2
     DU[Direct Assigned Users<br/>TC/FA with no manager]
     DU --> DD2
@@ -126,7 +126,7 @@ flowchart TB
 | Viewer | Dropdown content | Source |
 |--------|------------------|--------|
 | Manager | Only their TC/FA | Visibility **Assigned Users** |
-| ACM / RCM / ZCM / NCM | People under their CT book + direct Assigned Users | **Command Tower** + people resolver + optional Assigned Users |
+| ACM / RCM / ZCM / NCM | People under their Command Tower scope + direct Assigned Users | **Command Tower** + people resolver + optional Assigned Users |
 | Primary Tenant Admin | Wider / full as needed | Admin scope |
 
 Dropdowns never grant loan access by themselves. Loan rows still need Visibility.
@@ -239,7 +239,7 @@ ACCESS = Authenticated Identity
 | Dimension | Godrej now | Notes |
 |-----------|------------|-------|
 | Assignee / Self / Assigned Users | Primary | Team + worker scope |
-| Product, Bucket, Agency | Primary | **Book rules** |
+| Product, Bucket, Agency | Primary | **Command Tower rules** |
 | Branch | Optional / blank | Future-ready, non-mandatory |
 | All Cases | Primary Tenant Admin | Explicit only |
 
@@ -248,7 +248,7 @@ ACCESS = Authenticated Identity
 ```mermaid
 flowchart LR
   CT[Command Tower<br/>Org map NCM→…→Agency→Product→Bucket]
-  Seed[Seed book rules + dropdown scope]
+  Seed[Seed Command Tower rules + dropdown scope]
   Vis[Visibility Service<br/>Runtime ACL for cases]
   CT -->|informs| Seed --> Vis
   CT -.->|not runtime ACL| Cases[Loan queries]
@@ -273,13 +273,13 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-  L[Loan in ACM book]
+  L[Loan in ACM Command Tower scope]
   A[Assign to Telecaller or Field Agent only]
   L --> A
   A --> S[Stamp assignee = worker]
   S --> T[Worker sees via Self]
   S --> M[Managers with worker in Assigned Users see it]
-  S --> C[ACM still sees via Book rules]
+  S --> C[ACM still sees via Command Tower rules]
 ```
 
 ### 3.3 Profile cheat-sheet
@@ -287,8 +287,8 @@ flowchart TB
 | Profile | Typical Visibility |
 |---------|-------------------|
 | Primary Tenant Admin | All Cases |
-| NCM/ZCM/RCM/ACM | Book rules (± direct Assigned Users) |
-| Manager | Assigned Users (± optional book) |
+| NCM/ZCM/RCM/ACM | Command Tower rules (± direct Assigned Users) |
+| Manager | Assigned Users (± optional Command Tower rules) |
 | Telecaller / Field Agent | Self |
 | TC/FA reporting to ACM directly | ACM Assigned Users + their Self |
 
@@ -299,10 +299,10 @@ flowchart TB
 ```mermaid
 flowchart TD
   A[Confirm users and roles in DB]
-  B[Build Excel from current teams + CT books]
+  B[Build Excel from current teams + Command Tower rules]
   C[Self for all TC/FA]
   D[Assigned Users for managers and direct ACM reports]
-  E[Book rules for sub-tenants from CT]
+  E[Command Tower rules for sub-tenants from CT]
   F[Validate → Preview → Publish V1]
   G[Compare sample counts]
   H[Cut over APIs]
@@ -314,7 +314,7 @@ flowchart TD
 | Primary admin | All Cases = Y |
 | TC / FA | Self = Y |
 | Manager team | Assigned Users = team ids |
-| Sub-tenant CT book | Product/Bucket/Agency rows |
+| Sub-tenant Command Tower scope | Product/Bucket/Agency rows |
 | Direct ACM reports | Assigned Users on ACM |
 
 ---
@@ -325,8 +325,8 @@ flowchart TD
 |--------|--------|
 | New TC/FA | Profile + Self; add to manager or ACM Assigned Users; publish |
 | Move TC M1→M2 | Edit Assigned Users; publish |
-| Expand ACM territory | Edit book rules; publish |
-| CT org change | Update CT for dropdowns; refresh Visibility book seed if needed |
+| Expand ACM territory | Edit Command Tower rules; publish |
+| CT org change | Update CT for dropdowns; refresh Command Tower rules seed if needed |
 
 ---
 
@@ -360,7 +360,7 @@ flowchart LR
   end
   subgraph ma [Manager app]
     M1[Team loans / filters]
-    M2[Visibility = Assigned Users ± book]
+    M2[Visibility = Assigned Users ± Command Tower rules]
     M1 --> M2
   end
   API[Shared mobile backend<br/>applies Visibility]
@@ -377,7 +377,7 @@ Portfolio picker is demoted or removed as a security boundary on both platforms.
 | Profile | Seed | Feel |
 |---------|------|------|
 | Tenant Admin | All Cases | Full tenant + Visibility Admin |
-| Sub-tenant CM | Book ± Assigned Users | Scoped dropdowns + book cases |
+| Sub-tenant CM | Command Tower rules ± Assigned Users | Scoped dropdowns + Command Tower scope cases |
 | Manager | Assigned Users | Only their TC/FA |
 | TC / FA | Self | Own work only |
 
@@ -411,7 +411,7 @@ flowchart LR
 ## 10. Validation notes
 
 1. Solves temporary agency-per-manager hierarchy for access.  
-2. Sub-tenants do **not** see all managers/agents — only their book.  
+2. Sub-tenants do **not** see all managers/agents — only their Command Tower scope.  
 3. TC/FA can report directly to ACM/RCM via Assigned Users.  
 4. Branch column exists but is non-mandatory for Godrej now.  
 5. Fail closed: no Visibility config → no cases.

@@ -354,7 +354,7 @@
       <p class="diagram-cap">Today: agency per manager → portfolios multiply. Target: Visibility (team + Command Tower rules) — no agency-per-manager for access.</p>
 
       <h3>3. Command Tower rules vs team rules</h3>
-      <img class="diagram-img" src="assets/diagram-book-vs-team.png" alt="Command Tower rules versus team rules" />
+      <img class="diagram-img" src="assets/diagram-ct-vs-team.png" alt="Command Tower rules versus team rules" />
       <p class="diagram-cap"><strong>Command Tower rules</strong> = Product/Bucket/Agency on the loan (from CT map). <strong>Team rules</strong> = Assigned Users / Self. Same user can have both (OR).</p>
       <div class="mermaid">
 flowchart TB
@@ -453,7 +453,7 @@ flowchart LR
       <div class="mermaid">
 flowchart TB
   TA[Tenant Admin]
-  CM[Collection managers / area books]
+  CM[Collection managers / Command Tower scope]
   M[Manager]
   TC[Telecaller]
   FA[Field Agent]
@@ -466,7 +466,7 @@ flowchart TB
       </div>
       <p>
         Business needs include: manager sees their team’s cases; telecaller/field agent see assigned cases;
-        admins see wider books; mixed product/bucket under one manager without inventing fake agencies.
+        admins see wider Command Tower scope; mixed product/bucket under one manager without inventing fake agencies.
       </p>
 
       <h3>2.2 Temporary workaround today</h3>
@@ -481,7 +481,7 @@ flowchart TB
           <tr><td>One agency per manager</td><td>Isolates each manager’s team</td></tr>
           <tr><td>Portfolio = Agency × Product × Bucket</td><td>Same product/bucket repeated under every manager agency</td></tr>
           <tr><td>Net result</td><td><strong>Managers × portfolios</strong> to create and maintain</td></tr>
-          <tr><td>Command Tower / CM filters</td><td>Often used alongside this to filter books on web/reporting</td></tr>
+          <tr><td>Command Tower / CM filters</td><td>Often used alongside this to filter by Command Tower rules on web/reporting</td></tr>
         </tbody>
       </table>
 
@@ -620,7 +620,7 @@ flowchart TB
             <td>Operate on loan id; hierarchy not required for callback</td>
           </tr>
           <tr>
-            <td>Command Tower books</td>
+            <td>Command Tower rules</td>
             <td>Mixed as security + org map</td>
             <td>CT remains org/reference; security = Visibility (seeded from CT where useful)</td>
           </tr>
@@ -711,7 +711,7 @@ flowchart TB
       <p>
         Both are driven by configuration — not by creating a separate agency per manager.
         Case visibility uses Visibility rules. People dropdowns use the <strong>team roster</strong> derived from
-        those rules and, for sub-tenant roles, from <strong>Command Tower books</strong>.
+        those rules and, for sub-tenant roles, from <strong>Command Tower rules</strong>.
       </p>
 
       <h3>5A.1 Manager — only assigned telecallers &amp; field agents</h3>
@@ -859,7 +859,7 @@ flowchart TB
 
       <h3>5A.2 Sub-tenant roles (NCM / ZCM / RCM / ACM) — dropdowns &amp; Command Tower</h3>
       <p>
-        Sub-tenant users are Tenant Admin–class profiles with a Command Tower scope (book of business)
+        Sub-tenant users are Tenant Admin–class profiles with a Command Tower scope
         (often aligned to NCM → ZCM → RCM → ACM). They need dropdowns for
         <strong>child CMs, managers, telecallers, and field agents</strong> that sit under their Command Tower scope —
         not the entire tenant directory.
@@ -891,7 +891,7 @@ flowchart TB
             <td>
               ZCM list from CT;<br/>
               RCM / ACM cascaded from selected ZCM;<br/>
-              Managers / TC / FA = profiles whose work sits in agencies (or books) under that CT subtree
+              Managers / TC / FA = profiles whose work sits in agencies / Command Tower scope under that CT subtree
             </td>
           </tr>
           <tr>
@@ -902,7 +902,7 @@ flowchart TB
           <tr>
             <td><strong>RCM</strong></td>
             <td>ACMs under this RCM</td>
-            <td>ACM list; Managers / TC / FA under those ACMs’ agencies/books</td>
+            <td>ACM list; Managers / TC / FA under those ACMs’ agencies / Command Tower scope</td>
           </tr>
           <tr>
             <td><strong>ACM</strong></td>
@@ -1076,7 +1076,7 @@ flowchart LR
           <tr><td>User profile + role</td><td>CRM registration (DB)</td><td>Identity + Authorization</td></tr>
           <tr><td>Visibility rules</td><td>Excel / Visibility Admin</td><td>Case scope</td></tr>
           <tr><td>Loan attributes</td><td>LMS sync / allocation</td><td>Match Product/Bucket/Agency/(Branch)/Assignee</td></tr>
-          <tr><td>Command Tower map</td><td>Existing CT / SEAM uploads</td><td>Org reference + optional seed of visibility books</td></tr>
+          <tr><td>Command Tower map</td><td>Existing CT / SEAM uploads</td><td>Org reference + optional seed of Command Tower rules</td></tr>
           <tr><td>Assignment actions</td><td>Allocator / manager in CRM or app</td><td>Updates assignee → SELF visibility</td></tr>
         </tbody>
       </table>
@@ -1247,7 +1247,7 @@ flowchart TB
         <li>Using LMS as loan source (replacing import)</li>
         <li>Assigning collectors/field agents to loans</li>
         <li>Optionally keeping Command Tower for org/reporting maps</li>
-        <li>Publishing Visibility workbooks when teams or books change</li>
+        <li>Publishing Visibility workbooks when teams or Command Tower rules change</li>
       </ul>
     </section>
 
@@ -1375,7 +1375,7 @@ sequenceDiagram
       <h3>Phase 2 — Seed from current Godrej reality <span class="tag phase">Migrate</span></h3>
       <ul>
         <li>Generate workbook from: Self for TC/FA, Assigned Users for managers, All Cases for primary admin</li>
-        <li>Enrich CM/manager books from Command Tower Product/Bucket/Agency maps where applicable</li>
+        <li>Enrich CM/manager Command Tower rules from Command Tower Product/Bucket/Agency maps where applicable</li>
         <li>Dry-run publish; reconcile sample user case counts vs old behaviour</li>
       </ul>
 
