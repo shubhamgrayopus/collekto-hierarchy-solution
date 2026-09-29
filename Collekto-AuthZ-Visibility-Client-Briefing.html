@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Collekto — Godrej Hierarchy Solution | Detailed Briefing</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a2332;
+      --muted: #5c6b7a;
+      --line: #d5dde6;
+      --paper: #f7f5f0;
+      --card: #ffffff;
+      --accent: #0f6b5c;
+      --accent-soft: #e6f2ef;
+      --warn: #9a5b16;
+      --warn-soft: #f8efe3;
+      --danger: #8b2e2e;
+      --radius: 10px;
+      --shadow: 0 10px 30px rgba(26, 35, 50, 0.06);
+      --font-display: "Fraunces", "Georgia", serif;
+      --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+      --font-mono: "IBM Plex Mono", "Consolas", monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #e8f3ef 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #efe8dc 0%, transparent 50%),
+        var(--paper);
+      font-family: var(--font-body);
+      line-height: 1.55;
+      font-size: 16.5px;
+    }
+    .layout {
+      display: block;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 240px;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.96);
+      border-left: 1px solid var(--line);
+      padding: 1.15rem 0.85rem 2rem;
+      box-shadow: -6px 0 24px rgba(26, 35, 50, 0.04);
+      transition: transform 0.22s ease;
+    }
+    .sidebar-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.2rem 0.15rem 0.85rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 0.75rem;
+    }
+    .sidebar .brand {
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 1.05rem;
+      padding: 0.15rem 0.4rem 0;
+    }
+    .sidebar-toggle,
+    .sidebar-open-btn {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      cursor: pointer;
+      font-family: var(--font-body);
+    }
+    .sidebar-toggle {
+      flex-shrink: 0;
+      border-radius: 6px;
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.1rem;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      padding: 0;
+    }
+    .sidebar-toggle:hover,
+    .sidebar-open-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .sidebar-open-btn {
+      position: fixed;
+      top: 1rem;
+      right: 0.85rem;
+      z-index: 40;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      display: none;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--accent);
+    }
+    body.sidebar-collapsed .sidebar {
+      transform: translateX(110%);
+      pointer-events: none;
+    }
+    body.sidebar-collapsed .sidebar-open-btn {
+      display: inline-flex;
+    }
+    body.sidebar-collapsed main {
+      margin-right: auto;
+      margin-left: auto;
+      max-width: 920px;
+    }
+    .sidebar .nav-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      padding: 0.35rem 0.55rem 0.5rem;
+    }
+    .sidebar nav a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.84rem;
+      line-height: 1.35;
+      padding: 0.45rem 0.55rem;
+      border-radius: 6px;
+      border-left: 2px solid transparent;
+      margin-bottom: 0.1rem;
+    }
+    .sidebar nav a:hover {
+      color: var(--ink);
+      background: var(--accent-soft);
+    }
+    .sidebar nav a.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto 0 0;
+      padding: 2rem 1.5rem 4rem;
+      margin-right: 260px;
+      margin-left: max(1rem, calc((100% - 920px - 260px) / 2));
+      transition: margin 0.22s ease;
+    }
+    .hero { padding: 2.25rem 0 1.5rem; border-bottom: 1px solid var(--line); margin-bottom: 2rem; }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem;
+      color: var(--accent); font-weight: 700; margin: 0 0 0.75rem;
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.85rem, 3.8vw, 2.6rem);
+      line-height: 1.15; margin: 0 0 0.75rem; font-weight: 700;
+    }
+    .lede { font-size: 1.12rem; color: var(--muted); max-width: 46rem; margin: 0 0 1.4rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip {
+      background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+      padding: 0.35rem 0.8rem; font-size: 0.85rem; color: var(--muted);
+    }
+    .chip strong { color: var(--ink); }
+    section { margin: 2.75rem 0; scroll-margin-top: 1.25rem; }
+    h2 {
+      font-family: var(--font-display); font-size: 1.55rem; margin: 0 0 0.75rem;
+      padding-bottom: 0.45rem; border-bottom: 2px solid var(--accent); display: inline-block;
+    }
+    h3 { font-size: 1.12rem; margin: 1.6rem 0 0.55rem; }
+    h4 { font-size: 1rem; margin: 1.1rem 0 0.4rem; color: var(--accent); }
+    p { margin: 0.55rem 0 0.95rem; }
+    .muted { color: var(--muted); }
+    ul, ol { margin: 0.4rem 0 1rem; padding-left: 1.25rem; }
+    li { margin: 0.3rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.15rem 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    @media (max-width: 860px) {
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 980px) {
+      .sidebar {
+        width: 200px;
+      }
+      main {
+        margin-right: 212px;
+        margin-left: 1rem;
+        max-width: none;
+      }
+    }
+    @media (max-width: 720px) {
+      .sidebar {
+        display: none;
+      }
+      .sidebar-open-btn {
+        display: none !important;
+      }
+      main {
+        margin-right: 1rem;
+        margin-left: 1rem;
+      }
+    }
+    @media print {
+      .sidebar,
+      .sidebar-open-btn { display: none !important; }
+      main { margin: 0; max-width: none; }
+      body { background: #fff; }
+      .card, .mermaid, table { box-shadow: none; break-inside: avoid; }
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 1.1rem 1.15rem; box-shadow: var(--shadow);
+    }
+    .card h3 { margin-top: 0; color: var(--accent); font-family: var(--font-display); }
+    .card .q { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .callout {
+      border-left: 4px solid var(--accent); background: var(--accent-soft);
+      padding: 1rem 1.15rem; border-radius: 0 var(--radius) var(--radius) 0; margin: 1.15rem 0;
+    }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+    table {
+      width: 100%; border-collapse: collapse; background: var(--card);
+      border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+      font-size: 0.93rem; margin: 0.9rem 0 1.35rem;
+    }
+    th, td { text-align: left; padding: 0.65rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th {
+      background: #eef3f1; font-weight: 700; font-size: 0.78rem;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .mermaid {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 1rem; margin: 1.15rem 0; overflow-x: auto;
+    }
+    .flow-steps { display: grid; gap: 0.6rem; margin: 1rem 0; }
+    .flow-step {
+      display: grid; grid-template-columns: 2.3rem 1fr; gap: 0.8rem; align-items: start;
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 1rem;
+    }
+    .flow-step .n {
+      width: 2.3rem; height: 2.3rem; border-radius: 50%; background: var(--accent); color: #fff;
+      display: grid; place-items: center; font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem;
+    }
+    .tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 0.18rem 0.4rem; border-radius: 4px; margin-right: 0.3rem;
+    }
+    .tag.new { background: var(--accent-soft); color: var(--accent); }
+    .tag.phase { background: #eef0f7; color: #334; }
+    .tag.optional { background: var(--warn-soft); color: var(--warn); }
+    .tag.retire { background: #f6e8e8; color: var(--danger); }
+    .formula {
+      font-family: var(--font-mono); background: var(--ink); color: #e8efe9;
+      padding: 1rem 1.15rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.92rem;
+    }
+    footer {
+      margin-top: 3rem; padding-top: 1.4rem; border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 0.9rem;
+    }
+    code { font-family: var(--font-mono); font-size: 0.88em; background: #eef2f0; padding: 0.1rem 0.35rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <button type="button" class="sidebar-open-btn" id="sidebar-open" aria-label="Open navigation">
+    ☰ Menu
+  </button>
+  <aside class="sidebar" id="sidebar" aria-label="Section navigation">
+    <div class="sidebar-header">
+      <div class="brand">Collekto</div>
+      <button type="button" class="sidebar-toggle" id="sidebar-close" title="Collapse sidebar" aria-label="Collapse sidebar">›</button>
+    </div>
+    <div class="nav-label">On this page</div>
+    <nav id="side-nav">
+      <a href="#summary">1. Summary</a>
+      <a href="#problem">2. Problem</a>
+      <a href="#solution">3. Solution</a>
+      <a href="#solves">4. What it solves</a>
+      <a href="#onboarding">5. Onboarding</a>
+      <a href="#people">5A. Team &amp; dropdowns</a>
+      <a href="#input">6. Data input</a>
+      <a href="#command-tower">7. Command tower</a>
+      <a href="#branch">8. Branch</a>
+      <a href="#godrej">9. Godrej end-to-end</a>
+      <a href="#flows">10. Flows</a>
+      <a href="#phases">11. Phases</a>
+      <a href="#modules">12. Modules</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <p class="eyebrow">Godrej · Detailed hierarchy solution briefing</p>
+      <h1>Identity, Authorization &amp; Visibility for Godrej Hierarchy</h1>
+      <p class="lede">
+        A complete operating model to replace the temporary per-manager agency workaround,
+        configure who can see which cases, change how users are onboarded, account for Command Tower,
+        and roll out phase by phase across CRM Web, Manager App, and Field Agent App (iOS &amp; Android).
+      </p>
+      <div class="meta">
+        <span class="chip"><strong>Tenant:</strong> Godrej</span>
+        <span class="chip"><strong>Identity:</strong> Database profiles</span>
+        <span class="chip"><strong>Branch:</strong> Optional / future-ready</span>
+        <span class="chip"><strong>Apps:</strong> Web · Manager · Field</span>
+      </div>
+    </header>
+
+    <!-- 1 SUMMARY -->
+    <section id="summary">
+      <h2>1. Executive summary</h2>
+      <p>
+        Godrej needs a clear collection hierarchy (managers with telecallers and field agents,
+        across products and buckets). Today this is achieved with a <strong>temporary workaround</strong>:
+        create a <strong>separate agency for each manager</strong>. Because
+        <code>Portfolio = Agency × Product × Bucket</code>, portfolios multiply as
+        <strong>managers × product/bucket combinations</strong>, which creates heavy maintenance.
+      </p>
+      <p>
+        <strong>To solve this hierarchy issue specific to Godrej</strong>, Collekto will implement
+        three platform layers — Identity, Authorization, and Visibility — so access is configured
+        explicitly and the per-manager agency pattern is no longer required for access control.
+      </p>
+      <div class="grid-3">
+        <article class="card">
+          <div class="q">Identity</div>
+          <h3>Who are you?</h3>
+          <p>Profiles and sessions in the <strong>database</strong>. One user id used by Web and mobile apps.</p>
+        </article>
+        <article class="card">
+          <div class="q">Authorization</div>
+          <h3>What can you do?</h3>
+          <p>Role → permissions (view case, assign, settle, open reports, admin modules).</p>
+        </article>
+        <article class="card">
+          <div class="q">Visibility</div>
+          <h3>Which cases?</h3>
+          <p>Rules on Assignee, Product, Bucket, Agency, and optional Branch / All Cases.</p>
+        </article>
+      </div>
+      <div class="formula">ACCESS = Authenticated Identity + Required Permission + Matching Visibility</div>
+    </section>
+
+    <!-- 2 PROBLEM -->
+    <section id="problem">
+      <h2>2. Problem statement</h2>
+      <h3>2.1 Intended Godrej hierarchy (business)</h3>
+      <div class="mermaid">
+flowchart TB
+  TA[Tenant Admin]
+  CM[Collection managers / area books]
+  M[Manager]
+  TC[Telecaller]
+  FA[Field Agent]
+  Loans[Loans / Cases]
+  TA --> CM --> M
+  M --> TC
+  M --> FA
+  TC --> Loans
+  FA --> Loans
+      </div>
+      <p>
+        Business needs include: manager sees their team’s cases; telecaller/field agent see assigned cases;
+        admins see wider books; mixed product/bucket under one manager without inventing fake agencies.
+      </p>
+
+      <h3>2.2 Temporary workaround today</h3>
+      <div class="callout warn">
+        <strong>Temporary solution:</strong> a <strong>separate agency is created for each manager</strong>
+        so that manager’s telecallers and field agents (and portfolios) sit under that agency.
+      </div>
+      <table>
+        <thead><tr><th>Mechanism</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td>One agency per manager</td><td>Isolates each manager’s team</td></tr>
+          <tr><td>Portfolio = Agency × Product × Bucket</td><td>Same product/bucket repeated under every manager agency</td></tr>
+          <tr><td>Net result</td><td><strong>Managers × portfolios</strong> to create and maintain</td></tr>
+          <tr><td>Command Tower / CM filters</td><td>Often used alongside this to filter books on web/reporting</td></tr>
+        </tbody>
+      </table>
+
+      <h3>2.3 What breaks or becomes hard</h3>
+      <ul>
+        <li>Onboarding a manager means agency + many portfolios + people membership</li>
+        <li>Moving a telecaller/field agent means portfolio/agency maintenance</li>
+        <li>Dashboards, loan lists, reports, and mobile apps all inherit the same structure</li>
+        <li>LMS loan ingest (replacing import) must not recreate the same agency explosion</li>
+        <li>No clean model for “this manager sees T1, T2, F1” without agency isolation</li>
+      </ul>
+    </section>
+
+    <!-- 3 SOLUTION -->
+    <section id="solution">
+      <h2>3. Solution architecture</h2>
+      <p>
+        Visibility is <strong>configured case scope</strong>, not “simulate hierarchy with agencies.”
+        Hierarchy-like outcomes (manager team, area book, admin all-cases) are expressed as rules.
+      </p>
+      <div class="mermaid">
+flowchart TB
+  Apps["CRM Web · Manager App · Field App"]
+  Id["IDENTITY<br/>DB profiles & sessions"]
+  Auth["AUTHORIZATION<br/>Role → Permissions"]
+  Vis["VISIBILITY<br/>Rules: Assignee · Product · Bucket · Agency · Branch? · All Cases"]
+  Data["Loans / Cases / Settlements / Visits"]
+  Apps --> Id --> Auth --> Vis --> Data
+      </div>
+
+      <h3>3.1 Visibility rule semantics</h3>
+      <table>
+        <thead><tr><th>Pattern</th><th>Meaning</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Same column, multiple values</td><td><strong>OR</strong></td><td>Bucket B1 | B2</td></tr>
+          <tr><td>Different columns, one row</td><td><strong>AND</strong></td><td>Product PL AND Agency Inhouse</td></tr>
+          <tr><td>Multiple rows, same user</td><td><strong>OR</strong></td><td>Team assignees OR product book</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 Dimensions for Godrej</h3>
+      <table>
+        <thead><tr><th>Dimension</th><th>Godrej now</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Assignee</strong></td><td><span class="tag new">Primary</span></td><td>Self for TC/FA; lists for managers</td></tr>
+          <tr><td><strong>Product</strong></td><td><span class="tag new">Primary</span></td><td>From loan / LMS attributes</td></tr>
+          <tr><td><strong>Bucket</strong></td><td><span class="tag new">Primary</span></td><td>From loan / LMS attributes</td></tr>
+          <tr><td><strong>Agency</strong></td><td><span class="tag new">Supported</span></td><td>Prefer shared/inhouse agency — not one agency per manager</td></tr>
+          <tr><td><strong>Branch</strong></td><td><span class="tag optional">Optional</span></td><td>Not used by Godrej today; column present, non-mandatory</td></tr>
+          <tr><td><strong>All Cases</strong></td><td><span class="tag new">Admin</span></td><td>Explicit tenant-wide for primary Tenant Admin</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3.3 What this deliberately separates</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Visibility (this solution)</h3>
+          <p>Which loans appear on lists, dashboards, reports, mobile home screens.</p>
+        </div>
+        <div class="card">
+          <h3>Assignment (related, separate)</h3>
+          <p>Who is allocated to work a loan (TC/FA). After assign, SELF visibility applies.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 SOLVES -->
+    <section id="solves">
+      <h2>4. Implementations &amp; flows this solves</h2>
+      <table>
+        <thead><tr><th>Flow / module</th><th>Problem today</th><th>How the solution fixes it</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Manager onboarding</td>
+            <td>New agency + portfolios per product/bucket</td>
+            <td>Create manager profile + visibility rows (Assigned Users / Product+Bucket)</td>
+          </tr>
+          <tr>
+            <td>TC / FA onboarding</td>
+            <td>Add to manager agency portfolios</td>
+            <td>Create profile + Self Assigned; optionally add to manager’s Assigned Users</td>
+          </tr>
+          <tr>
+            <td>Loan list / All Cases</td>
+            <td>Scoped by portfolio membership / manager agency</td>
+            <td>Backend Visibility predicate on every query</td>
+          </tr>
+          <tr>
+            <td>Loan detail</td>
+            <td>May open cases outside intended book</td>
+            <td>Deny if case fails visibility</td>
+          </tr>
+          <tr>
+            <td>Dashboards</td>
+            <td>KPI totals follow wrong agency/portfolio set</td>
+            <td>Same visibility predicate on aggregates</td>
+          </tr>
+          <tr>
+            <td>Reports / MIS</td>
+            <td>Row scope tied to temporary hierarchy</td>
+            <td>Report queries use Visibility Context</td>
+          </tr>
+          <tr>
+            <td>Filters (multi-select)</td>
+            <td>Agency/portfolio driven; inconsistent multi-select</td>
+            <td>Multi-select Product/Bucket/Agency/Assignee ∩ visibility</td>
+          </tr>
+          <tr>
+            <td>Loan assignment</td>
+            <td>Confused with portfolio membership</td>
+            <td>Assign updates assignee; visibility SELF for worker; manager sees via Assigned Users</td>
+          </tr>
+          <tr>
+            <td>Settlement list / approve</td>
+            <td>Often portfolio-linked</td>
+            <td>Scope via loan visibility + permission to settle/approve</td>
+          </tr>
+          <tr>
+            <td>Field Agent app</td>
+            <td>Requires portfolioId as access key</td>
+            <td>SELF visibility; portfolio picker demoted</td>
+          </tr>
+          <tr>
+            <td>Manager app</td>
+            <td>Team loans via manager agency portfolios</td>
+            <td>Assigned Users / dimension rules</td>
+          </tr>
+          <tr>
+            <td>LMS loan ingest</td>
+            <td>Risk of recreating agency×portfolio explosion</td>
+            <td>Stamp Product/Bucket/Agency on loan; do not create per-manager agency</td>
+          </tr>
+          <tr>
+            <td>SMS / Payment callbacks</td>
+            <td>May assume portfolio/agency context</td>
+            <td>Operate on loan id; hierarchy not required for callback</td>
+          </tr>
+          <tr>
+            <td>Command Tower books</td>
+            <td>Mixed as security + org map</td>
+            <td>CT remains org/reference; security = Visibility (seeded from CT where useful)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5 ONBOARDING -->
+    <section id="onboarding">
+      <h2>5. How user onboarding changes</h2>
+
+      <h3>5.1 Today (temporary model)</h3>
+      <div class="flow-steps">
+        <div class="flow-step"><div class="n">1</div><div>Create agency for the manager</div></div>
+        <div class="flow-step"><div class="n">2</div><div>Create portfolios for each Product × Bucket under that agency</div></div>
+        <div class="flow-step"><div class="n">3</div><div>Create manager / TC / FA profiles under that agency</div></div>
+        <div class="flow-step"><div class="n">4</div><div>Attach people to portfolios so they can see loans</div></div>
+      </div>
+
+      <h3>5.2 Target onboarding (Visibility model)</h3>
+      <div class="flow-steps">
+        <div class="flow-step"><div class="n">1</div><div><strong>Identity:</strong> Create user in database with role (Tenant Admin / Manager / Telecaller / Field Agent / …)</div></div>
+        <div class="flow-step"><div class="n">2</div><div><strong>Authorization:</strong> Role grants permissions (what screens/actions)</div></div>
+        <div class="flow-step"><div class="n">3</div><div><strong>Visibility:</strong> Add rule rows for that user (Self / Assigned Users / Product+Bucket / Agency / All Cases)</div></div>
+        <div class="flow-step"><div class="n">4</div><div><strong>Publish:</strong> Validate and activate visibility version — user can now see the correct cases</div></div>
+      </div>
+
+      <h3>5.3 Role-wise onboarding checklist</h3>
+      <table>
+        <thead><tr><th>Role</th><th>Create profile</th><th>Visibility seed</th><th>No longer required</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Primary Tenant Admin</td>
+            <td>Yes</td>
+            <td>All Cases = Yes</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Manager</td>
+            <td>Yes (shared/inhouse agency ok)</td>
+            <td>Assigned Users = their TC/FA; optional Product+Bucket rows</td>
+            <td><span class="tag retire">Retire</span> dedicated agency + portfolio fan-out</td>
+          </tr>
+          <tr>
+            <td>Telecaller</td>
+            <td>Yes</td>
+            <td>Self Assigned = Yes; ensure manager’s Assigned Users includes them</td>
+            <td>Membership on many portfolios for access</td>
+          </tr>
+          <tr>
+            <td>Field Agent</td>
+            <td>Yes</td>
+            <td>Self Assigned = Yes; ensure manager’s Assigned Users includes them</td>
+            <td>Portfolio picker as security</td>
+          </tr>
+          <tr>
+            <td>Area / book admin (NCM/ZCM/RCM/ACM style)</td>
+            <td>Yes + permissions</td>
+            <td>Product/Bucket/Agency (and later Branch) rows for their book</td>
+            <td>Assuming title alone grants loan filter</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Default automation (recommended):</strong> on create of Telecaller / Field Agent,
+        system auto-adds <em>Self Assigned = Yes</em> into a draft visibility set (still published with audit).
+        Manager team links are maintained via Assigned Users on the manager’s rules.
+      </div>
+    </section>
+
+    <!-- PEOPLE / DROPDOWNS -->
+    <section id="people">
+      <h2>5A. Who appears in dropdowns — Managers vs Sub-tenant roles</h2>
+      <p>
+        There are two related but different questions:
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Case visibility</h3>
+          <p>Which <strong>loans/cases</strong> appear on lists, dashboards, and reports.</p>
+        </div>
+        <div class="card">
+          <h3>People visibility (dropdowns)</h3>
+          <p>Which <strong>managers / telecallers / field agents</strong> appear when a user opens a filter or assignment dropdown.</p>
+        </div>
+      </div>
+      <p>
+        Both are driven by configuration — not by creating a separate agency per manager.
+        Case visibility uses Visibility rules. People dropdowns use the <strong>team roster</strong> derived from
+        those rules and, for sub-tenant roles, from <strong>Command Tower books</strong>.
+      </p>
+
+      <h3>5A.1 Manager — only assigned telecallers &amp; field agents</h3>
+      <div class="callout">
+        <strong>Rule:</strong> A manager’s TC/FA dropdowns show <em>only</em> the users listed in that manager’s
+        Visibility <strong>Assigned Users</strong> configuration — not every telecaller/field agent in the tenant.
+      </div>
+
+      <h4>How it is configured</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th><th>Assigned Users</th><th>Self</th><th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>M1</td>
+            <td>T1 | T2 | F1 | F2</td>
+            <td></td>
+            <td>M1’s team roster = T1, T2, F1, F2</td>
+          </tr>
+          <tr>
+            <td>T1</td>
+            <td></td>
+            <td>Y</td>
+            <td>T1 sees only self-assigned cases</td>
+          </tr>
+          <tr>
+            <td>F1</td>
+            <td></td>
+            <td>Y</td>
+            <td>F1 sees only self-assigned cases</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>What the manager sees where</h4>
+      <table>
+        <thead><tr><th>Surface</th><th>Behaviour</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Telecaller dropdown (filters / assign / reports)</td>
+            <td>Only T1, T2 (from M1 Assigned Users who are telecallers)</td>
+          </tr>
+          <tr>
+            <td>Field Agent dropdown</td>
+            <td>Only F1, F2</td>
+          </tr>
+          <tr>
+            <td>Loan list / Manager App team loans</td>
+            <td>Cases where assignee ∈ {T1, T2, F1, F2} <em>and/or</em> Product+Bucket rules on M1</td>
+          </tr>
+          <tr>
+            <td>Another manager M2</td>
+            <td>Does <strong>not</strong> see T1/T2/F1/F2 unless those ids are also on M2’s Assigned Users</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mermaid">
+flowchart LR
+  Config["Visibility: M1 Assigned Users = T1 T2 F1 F2"]
+  Roster["Manager roster API"]
+  DD["TC / FA dropdowns"]
+  Cases["Case list predicate assignee in roster"]
+  Config --> Roster --> DD
+  Config --> Cases
+      </div>
+
+      <h4>How the roster is loaded at runtime</h4>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="n">1</div>
+          <div>Manager logs in → Identity resolves profile M1.</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">2</div>
+          <div>System loads M1’s <strong>active Visibility rules</strong> and reads <strong>Assigned Users</strong>.</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">3</div>
+          <div>Roster API returns only those profile ids, split by role (Telecaller vs Field Agent).</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">4</div>
+          <div>UI dropdowns bind to that roster. No portfolio membership and no “all users in my agency” query.</div>
+        </div>
+      </div>
+
+      <h4>Adding or removing someone from a manager’s team</h4>
+      <ul>
+        <li><strong>Add:</strong> put the TC/FA id into M1’s Assigned Users → publish Visibility → dropdown and case scope update together.</li>
+        <li><strong>Remove:</strong> delete id from Assigned Users → publish → they disappear from M1’s dropdowns and from M1’s assignee-based case scope.</li>
+        <li>TC/FA keep <strong>Self</strong> visibility for their own cases regardless of which manager lists them.</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Multi-manager teams:</strong> If both M1 and M2 must supervise the same people, list the same TC/FA ids
+        on both managers’ Assigned Users rows. That replaces sharing one agency.
+      </div>
+
+      <h4>Direct report to ACM / RCM (no manager in between)</h4>
+      <p>
+        Yes — this is supported. <strong>Assigned Users is not limited to the Manager role.</strong>
+        A telecaller or field agent can report directly to an ACM or RCM (or ZCM/NCM) without a manager profile.
+      </p>
+      <table>
+        <thead><tr><th>Need</th><th>How it is configured</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>ACM/RCM sees those people’s <strong>cases</strong></td>
+            <td>On ACM/RCM Visibility: <strong>Assigned Users = T1 | F1 | …</strong> (same column as for managers)</td>
+          </tr>
+          <tr>
+            <td>ACM/RCM sees those people in <strong>dropdowns</strong></td>
+            <td>People resolver includes profiles listed on that CM’s Assigned Users <em>and/or</em> mapped under their Command Tower book without requiring a manager node</td>
+          </tr>
+          <tr>
+            <td>TC/FA own app / lists</td>
+            <td>Still <strong>Self Assigned = Y</strong> — unchanged</td>
+          </tr>
+          <tr>
+            <td>Optional book overlap</td>
+            <td>ACM can also keep Product/Bucket/Agency rules from CT; Assigned Users covers the direct-report people path</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mermaid">
+flowchart TB
+  ACM[ACM or RCM]
+  T[Telecaller T1]
+  F[Field Agent F1]
+  Rules["Visibility on ACM: Assigned Users = T1 F1"]
+  Cases[Cases assigned to T1 or F1]
+  ACM --> Rules --> Cases
+  T --> Cases
+  F --> Cases
+      </div>
+      <ul>
+        <li><strong>Solved:</strong> no need to invent a dummy manager or a per-manager agency just to hang TC/FA under ACM/RCM.</li>
+        <li><strong>Mixed teams:</strong> same ACM can have some people via managers (CT book → manager → Assigned Users) and some via direct Assigned Users on the ACM.</li>
+        <li><strong>Command Tower:</strong> may still map ACM → Agency → Product/Bucket for the book; people without a manager are attached via Visibility Assigned Users on the ACM/RCM, not forced through a manager row in CT.</li>
+      </ul>
+
+      <h3>5A.2 Sub-tenant roles (NCM / ZCM / RCM / ACM) — dropdowns &amp; Command Tower</h3>
+      <p>
+        Sub-tenant users are Tenant Admin–class profiles with a book of business
+        (often aligned to NCM → ZCM → RCM → ACM). They need dropdowns for
+        <strong>child CMs, managers, telecallers, and field agents</strong> that sit under their book —
+        not the entire tenant directory.
+      </p>
+
+      <h4>What Command Tower contributes</h4>
+      <p>
+        Command Tower stores the org map, for example:
+      </p>
+      <div class="formula">NCM → ZCM → RCM → ACM → Agency → Product → Bucket</div>
+      <p>
+        For a logged-in sub-tenant user, Command Tower answers:
+        <em>“Which agencies / products / buckets (and child CM ids) sit under my node?”</em>
+      </p>
+
+      <h4>How dropdown population works by sub-role</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Logged-in sub-role</th>
+            <th>Command Tower scope</th>
+            <th>Dropdowns they see</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>NCM</strong></td>
+            <td>All ZCMs (and below) under this NCM in CT</td>
+            <td>
+              ZCM list from CT;<br/>
+              RCM / ACM cascaded from selected ZCM;<br/>
+              Managers / TC / FA = profiles whose work sits in agencies (or books) under that CT subtree
+            </td>
+          </tr>
+          <tr>
+            <td><strong>ZCM</strong></td>
+            <td>RCMs under this ZCM</td>
+            <td>RCM → ACM cascade; Managers / TC / FA under that subtree only</td>
+          </tr>
+          <tr>
+            <td><strong>RCM</strong></td>
+            <td>ACMs under this RCM</td>
+            <td>ACM list; Managers / TC / FA under those ACMs’ agencies/books</td>
+          </tr>
+          <tr>
+            <td><strong>ACM</strong></td>
+            <td>Agencies (and product/bucket) under this ACM</td>
+            <td>Managers / TC / FA linked to those agencies or to managers in that book — not tenant-wide</td>
+          </tr>
+          <tr>
+            <td><strong>Primary Tenant Admin</strong> (no sub-role)</td>
+            <td>Full CT optional for filters</td>
+            <td>Can load full NCM→… cascade and wider people search (still subject to All Cases for <em>loans</em>)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mermaid">
+flowchart TB
+  ST[Sub-tenant user e.g. ZCM]
+  CT[Command Tower map]
+  Scope[Resolve subtree: RCM ACM Agency Product Bucket]
+  People[People resolver]
+  DD[Dropdown options: child CMs Managers TC FA]
+  Cases[Case Visibility rules for this user]
+  ST --> CT --> Scope
+  Scope --> People --> DD
+  ST --> Cases
+      </div>
+
+      <h4>Two-step resolve (important)</h4>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="n">1</div>
+          <div>
+            <strong>Book from Command Tower:</strong> from the logged-in CM id, read CT to get
+            child CM ids + Agency (+ Product/Bucket) set for that subtree.
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="n">2</div>
+            <div>
+              <strong>People from profiles:</strong> return Managers / Telecallers / Field Agents in that book —
+              (a) managers under the CT agencies, (b) TC/FA on those managers’ Assigned Users, and
+              (c) TC/FA listed <strong>directly</strong> on the logged-in CM’s Assigned Users (no manager required).
+            </div>
+        </div>
+        <div class="flow-step">
+          <div class="n">3</div>
+          <div>
+            <strong>Cases from Visibility:</strong> loan lists for the sub-tenant still use their
+            published Visibility rules (often Agency/Product/Bucket seeded from the same CT book).
+            Selecting a person in a dropdown only <em>narrows</em> further; it cannot expand beyond Visibility.
+          </div>
+        </div>
+      </div>
+
+      <h4>Example</h4>
+      <table>
+        <thead><tr><th>User</th><th>CT says</th><th>Dropdown result</th><th>Cases</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>ZCM-West</td>
+            <td>RCM-North, RCM-South → ACM-A, ACM-B → Agency Inhouse + Product PL…</td>
+            <td>Only those RCMs/ACMs; managers M1,M2 in that book; TC/FA on M1/M2 teams</td>
+            <td>Visibility rules for ZCM-West (seeded from same agencies/products/buckets)</td>
+          </tr>
+          <tr>
+            <td>ACM-A</td>
+            <td>Agency set under ACM-A only</td>
+            <td>Managers/TC/FA in ACM-A book only — not RCM-South’s people</td>
+            <td>Narrower Visibility book</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Cascade behaviour in UI (multi-select)</h4>
+      <ul>
+        <li>NCM selects one or more ZCMs → RCM options reload from CT under those ZCMs</li>
+        <li>RCM selection → ACM options reload</li>
+        <li>ACM / agency selection → Manager and TC/FA dropdowns reload from the people resolver</li>
+        <li>All cascades are scoped to the logged-in sub-tenant’s CT subtree (they never see another NCM’s tree)</li>
+      </ul>
+
+      <h3>5A.3 Summary matrix</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Viewer</th>
+            <th>TC/FA in dropdown</th>
+            <th>Managers in dropdown</th>
+            <th>Child CMs in dropdown</th>
+            <th>Source of truth</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Manager</td>
+            <td>Only Assigned Users</td>
+            <td>Usually N/A or limited</td>
+            <td>N/A</td>
+            <td>Visibility Assigned Users</td>
+          </tr>
+          <tr>
+            <td>ACM / RCM / ZCM / NCM</td>
+            <td>TC/FA under their CT book</td>
+            <td>Managers under their CT book</td>
+            <td>Child CMs from CT cascade</td>
+            <td>Command Tower subtree + people resolver</td>
+          </tr>
+          <tr>
+            <td>Primary Tenant Admin</td>
+            <td>Configurable / wider</td>
+            <td>Wider</td>
+            <td>Full CT cascade optional</td>
+            <td>Admin scope + CT for filters</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>Security reminder:</strong> Dropdown membership controls <em>who you can pick</em>.
+        Loan rows are still enforced by Visibility. A crafted API call cannot fetch cases outside Visibility
+        even if someone guesses another user’s id.
+      </div>
+    </section>
+
+    <!-- 6 INPUT -->
+    <section id="input">
+      <h2>6. How hierarchy / visibility data is input</h2>
+      <p>Business users do not maintain policy engines. They maintain a workbook (and/or admin UI that produces the same model).</p>
+
+      <h3>6.1 Visibility workbook (primary input)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th><th>Branch</th><th>Product</th><th>Bucket</th><th>Agency</th>
+            <th>Assigned Users</th><th>Self</th><th>All Cases</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>ADMIN1</td><td><em>optional</em></td><td></td><td></td><td></td><td></td><td></td><td>Y</td></tr>
+          <tr><td>M1</td><td></td><td></td><td></td><td></td><td>T1|T2|F1|F2</td><td></td><td></td></tr>
+          <tr><td>M1</td><td></td><td>PL</td><td>B1|B2</td><td>INHOUSE</td><td></td><td></td><td></td></tr>
+          <tr><td>T1</td><td></td><td></td><td></td><td></td><td></td><td>Y</td><td></td></tr>
+          <tr><td>F1</td><td></td><td></td><td></td><td></td><td></td><td>Y</td><td></td></tr>
+          <tr><td>ACM1</td><td></td><td></td><td></td><td>AG_A|AG_B</td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+      <p class="muted">For Godrej today, leave <strong>Branch</strong> blank. Column remains so Branch can be enabled later without redesign.</p>
+
+      <h3>6.2 Ingest pipeline</h3>
+      <div class="mermaid">
+flowchart LR
+  X[Excel / Admin UI] --> U[Upload]
+  U --> P[Parse]
+  P --> V[Validate vs DB]
+  V --> PR[Preview]
+  PR --> Pub[Publish]
+  Pub --> DB[(Active version)]
+  DB --> Cache[Invalidate cache]
+  Cache --> Runtime[Web + 4 apps]
+      </div>
+      <ul>
+        <li>Validate: user exists, product/bucket/agency exist, assigned users exist</li>
+        <li>Branch: if blank → ignored; if filled → must exist when Branch master is enabled</li>
+        <li>Nothing goes live until full-file validation succeeds</li>
+        <li>Each publish creates a version (ACTIVE / PREVIOUS) for audit and rollback</li>
+      </ul>
+
+      <h3>6.3 Other inputs that feed hierarchy behaviour</h3>
+      <table>
+        <thead><tr><th>Input</th><th>Source</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td>User profile + role</td><td>CRM registration (DB)</td><td>Identity + Authorization</td></tr>
+          <tr><td>Visibility rules</td><td>Excel / Visibility Admin</td><td>Case scope</td></tr>
+          <tr><td>Loan attributes</td><td>LMS sync / allocation</td><td>Match Product/Bucket/Agency/(Branch)/Assignee</td></tr>
+          <tr><td>Command Tower map</td><td>Existing CT / SEAM uploads</td><td>Org reference + optional seed of visibility books</td></tr>
+          <tr><td>Assignment actions</td><td>Allocator / manager in CRM or app</td><td>Updates assignee → SELF visibility</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 7 COMMAND TOWER -->
+    <section id="command-tower">
+      <h2>7. How Command Tower is taken into account</h2>
+      <div class="callout warn">
+        <strong>Position:</strong> Command Tower remains Godrej’s <em>organisational / mapping</em> artefact
+        (NCM → ZCM → RCM → ACM → Agency → Product → Bucket). It is <strong>not</strong> the runtime security engine.
+        Visibility rules are the runtime security engine.
+      </div>
+
+      <h3>7.1 Roles of the two systems</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Command Tower</h3>
+          <ul>
+            <li>Org / book-of-business map</li>
+            <li>Useful for reporting drill-downs and ops reference</li>
+            <li>Can inform <em>what</em> Product/Bucket/Agency belong to a CM book</li>
+            <li>May continue to be uploaded/maintained as today for reporting</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Visibility Service</h3>
+          <ul>
+            <li>Authoritative for “which cases can this user access?”</li>
+            <li>Enforced on CRM, Manager App, Field App APIs</li>
+            <li>Configured via Excel / Admin publish</li>
+            <li>Fail closed; versioned; cached</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>7.2 How CT feeds the hierarchy solution</h3>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="n">1</div>
+          <div><strong>Discovery:</strong> Export current Command Tower mappings (CM → agencies → products/buckets).</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">2</div>
+          <div><strong>Seed:</strong> Generate Visibility workbook rows for CM/manager users from CT (Agency / Product / Bucket sets).</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">3</div>
+          <div><strong>Team rules:</strong> Add Manager Assigned Users from current manager↔TC/FA relationships (not from CT alone).</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">4</div>
+          <div><strong>Cut over:</strong> Loan/dashboard/report APIs enforce Visibility. CT filters on UI become optional convenience only.</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">5</div>
+          <div><strong>Steady state:</strong> Day-2 access changes go through Visibility publish. CT updates for org analytics can continue in parallel without granting access by themselves.</div>
+        </div>
+      </div>
+
+      <h3>7.3 Command Tower and people dropdowns (sub-tenant)</h3>
+      <p>
+        For sub-tenant roles, Command Tower is the <strong>directory scope</strong> for cascading filters
+        and for deciding which managers / telecallers / field agents appear in dropdowns
+        (see <a href="#people">§5A</a>). Visibility remains the <strong>case scope</strong>.
+      </p>
+      <table>
+        <thead><tr><th>Need</th><th>Use Command Tower?</th><th>Use Visibility?</th></tr></thead>
+        <tbody>
+          <tr><td>Which ZCM/RCM/ACM options to show</td><td><strong>Yes</strong> — cascade from logged-in CM</td><td>No</td></tr>
+          <tr><td>Which agencies/products/buckets are in my book</td><td><strong>Yes</strong> — map</td><td>Also seeded into Visibility for case queries</td></tr>
+          <tr><td>Which TC/FA appear for a manager</td><td>No</td><td><strong>Yes</strong> — Assigned Users</td></tr>
+          <tr><td>Which TC/FA/managers appear for a ZCM/ACM</td><td><strong>Yes</strong> — subtree → people resolver</td><td>Cases still Visibility</td></tr>
+          <tr><td>Which loans appear</td><td>Not as ACL</td><td><strong>Yes</strong> — authoritative</td></tr>
+        </tbody>
+      </table>
+
+      <h3>7.4 What we will not do</h3>
+      <ul>
+        <li>Will not make Command Tower the sole ACL for case lists</li>
+        <li>Will not require CT sync on every page load for security of loan rows</li>
+        <li>Will not block hierarchy go-live on rebuilding CT as a full hierarchy engine</li>
+        <li>Will not show tenant-wide TC/FA lists to managers or to sub-tenants outside their CT book</li>
+      </ul>
+      <p class="muted">
+        If Godrej later wants automatic sync “CT change → Visibility draft,” that can be a later phase
+        (integration), after the Visibility engine is live.
+      </p>
+    </section>
+
+    <!-- 8 BRANCH -->
+    <section id="branch">
+      <h2>8. Branch dimension — non-mandatory for Godrej now</h2>
+      <p>
+        Godrej does <strong>not</strong> operate a branching model in Collekto today.
+        The Visibility model still includes <strong>Branch</strong> as a first-class dimension in the
+        workbook and data model so it can be enabled later without redesign.
+      </p>
+      <table>
+        <thead><tr><th>Aspect</th><th>Now (Godrej)</th><th>Future (if Branch adopted)</th></tr></thead>
+        <tbody>
+          <tr><td>Workbook column</td><td>Present, left blank</td><td>Filled with branch codes</td></tr>
+          <tr><td>Validation</td><td>Blank allowed</td><td>Value must exist in branch master</td></tr>
+          <tr><td>Loan attribute</td><td>Not required</td><td>LMS/sync stamps branch_id</td></tr>
+          <tr><td>UI filters</td><td>Hidden or disabled</td><td>Multi-select Branch filter</td></tr>
+          <tr><td>Visibility rules</td><td>Ignore empty Branch</td><td>AND with other dimensions as configured</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>Design principle:</strong> Branch is <em>optional infrastructure</em>, not a Godrej go-live dependency.
+      </div>
+    </section>
+
+    <!-- 9 GODREJ E2E -->
+    <section id="godrej">
+      <h2>9. How the whole solution works for Godrej</h2>
+
+      <h3>9.1 Target operating picture</h3>
+      <div class="mermaid">
+flowchart TB
+  subgraph identity [Identity DB]
+    Users[Profiles: Admin Manager TC FA]
+  end
+  subgraph vis [Visibility]
+    Rules[Published rules version N]
+  end
+  subgraph loans [Loans]
+    LMS[LMS sync stamps Product Bucket Agency Assignee]
+    Attr[Loan attributes]
+  end
+  subgraph apps [Apps]
+    Web[CRM Web]
+    MA[Manager App]
+    FA[Field App]
+  end
+  Users --> Rules
+  LMS --> Attr
+  Rules --> Web
+  Rules --> MA
+  Rules --> FA
+  Attr --> Web
+  Attr --> MA
+  Attr --> FA
+      </div>
+
+      <h3>9.2 Day in the life</h3>
+      <table>
+        <thead><tr><th>User</th><th>Opens</th><th>System behaviour</th></tr></thead>
+        <tbody>
+          <tr><td>Field Agent</td><td>Pending / PTP / visits</td><td>Auth ok → Visibility SELF → only assigned loans</td></tr>
+          <tr><td>Telecaller</td><td>All Cases / dialer lists</td><td>Visibility SELF → assigned loans</td></tr>
+          <tr><td>Manager</td><td>Team loans / Manager App</td><td>Visibility Assigned Users (± Product/Bucket) → team book</td></tr>
+          <tr><td>Tenant Admin</td><td>Dashboards / reports</td><td>All Cases → full tenant (explicit)</td></tr>
+          <tr><td>Any user</td><td>Applies multi-select filters</td><td>Filters ∩ Visibility — never expands scope</td></tr>
+        </tbody>
+      </table>
+
+      <h3>9.3 What Godrej stops doing</h3>
+      <ul>
+        <li>Creating a new agency for every new manager (for access)</li>
+        <li>Creating Product×Bucket portfolios under each manager agency only to grant access</li>
+        <li>Treating portfolio membership as the ACL for people</li>
+      </ul>
+
+      <h3>9.4 What Godrej continues doing</h3>
+      <ul>
+        <li>Maintaining product/bucket masters</li>
+        <li>Using LMS as loan source (replacing import)</li>
+        <li>Assigning collectors/field agents to loans</li>
+        <li>Optionally keeping Command Tower for org/reporting maps</li>
+        <li>Publishing Visibility workbooks when teams or books change</li>
+      </ul>
+    </section>
+
+    <!-- 10 FLOWS -->
+    <section id="flows">
+      <h2>10. Detailed operational flows</h2>
+
+      <h3>10.1 Runtime access (every list / detail / dashboard / report)</h3>
+      <div class="mermaid">
+sequenceDiagram
+  participant U as User
+  participant App as Web or Mobile
+  participant API as Backend
+  participant ID as Identity DB
+  participant AZ as Authorization
+  participant V as Visibility
+  participant DB as Cases DB
+  U->>App: Open loans / dashboard
+  App->>API: Request + session
+  API->>ID: Authenticate
+  ID-->>API: userId tenantId role
+  API->>AZ: Permission check
+  AZ-->>API: Allowed
+  API->>V: Resolve active rules
+  V-->>API: Predicate
+  API->>DB: Query tenant AND predicate AND UI filters
+  DB-->>API: Rows
+  API-->>App: Results
+      </div>
+
+      <h3>10.2 Publish visibility configuration</h3>
+      <div class="mermaid">
+flowchart TB
+  Ops[Ops / Tenant Admin] --> Edit[Edit Excel or Admin UI]
+  Edit --> Upload[Upload]
+  Upload --> Val{Validate all rows}
+  Val -->|Fail| Err[Row errors returned]
+  Val -->|Pass| Prev[Preview impact]
+  Prev --> Pub[Publish version N]
+  Pub --> Act[ACTIVE in DB]
+  Act --> Inv[Cache invalidation]
+  Inv --> Live[All apps use version N]
+      </div>
+
+      <h3>10.3 Manager team change</h3>
+      <div class="flow-steps">
+        <div class="flow-step"><div class="n">1</div><div>Move telecaller T1 from manager M1 to M2 in ops process</div></div>
+        <div class="flow-step"><div class="n">2</div><div>Update Visibility: remove T1 from M1 Assigned Users; add T1 to M2</div></div>
+        <div class="flow-step"><div class="n">3</div><div>Publish → M1/M2 loan lists update; T1 SELF unchanged</div></div>
+        <div class="flow-step"><div class="n">4</div><div>No agency/portfolio recreation required for access</div></div>
+      </div>
+
+      <h3>10.4 LMS loan arrives (replaces import)</h3>
+      <div class="flow-steps">
+        <div class="flow-step"><div class="n">1</div><div>LMS upserts loan by external id</div></div>
+        <div class="flow-step"><div class="n">2</div><div>Stamp Product, Bucket, Agency (Branch only if present later)</div></div>
+        <div class="flow-step"><div class="n">3</div><div>Assignee empty or set per LMS/allocation policy</div></div>
+        <div class="flow-step"><div class="n">4</div><div>Visible automatically to users whose rules match attributes / assignees</div></div>
+        <div class="flow-step"><div class="n">5</div><div><strong>Do not</strong> create per-manager agency as part of ingest</div></div>
+      </div>
+
+      <h3>10.5 Assignment then collection</h3>
+      <div class="mermaid">
+flowchart LR
+  L[Loan in book] --> A[Assign to FA or TC]
+  A --> S[Assignee stamped]
+  S --> FA[FA/TC sees via SELF]
+  S --> M[Manager sees via Assigned Users]
+  FA --> W[Disposition / visit / payment / settlement]
+      </div>
+
+      <h3>10.6 Manager opens TC / FA dropdown</h3>
+      <div class="mermaid">
+sequenceDiagram
+  participant M as Manager M1
+  participant UI as CRM or Manager App
+  participant API as Roster API
+  participant V as Visibility
+  M->>UI: Open assign / filter dropdown
+  UI->>API: Get team for M1
+  API->>V: Read Assigned Users for M1
+  V-->>API: T1 T2 F1 F2
+  API-->>UI: TC list + FA list
+  UI-->>M: Only those people selectable
+      </div>
+
+      <h3>10.7 Sub-tenant opens people / CM dropdowns</h3>
+      <div class="mermaid">
+sequenceDiagram
+  participant ST as Sub-tenant e.g. ZCM
+  participant UI as CRM filters
+  participant CT as Command Tower
+  participant PR as People resolver
+  ST->>UI: Open hierarchy / people filters
+  UI->>CT: Subtree for logged-in ZCM
+  CT-->>UI: Child RCM ACM Agency Product Bucket
+  UI->>PR: Managers TC FA in that book
+  PR-->>UI: Scoped people lists
+  Note over UI: Loan query still uses Visibility rules for ST
+      </div>
+    </section>
+
+    <!-- 11 PHASES -->
+    <section id="phases">
+      <h2>11. Phase-wise rollout into the system</h2>
+      <p>Rollout is incremental so Godrej keeps operating while the temporary agency model is retired.</p>
+
+      <h3>Phase 0 — Align &amp; inventory <span class="tag phase">Prep</span></h3>
+      <ul>
+        <li>Confirm roles, sample manager teams, product/bucket masters</li>
+        <li>Inventory Command Tower usage vs portfolio/agency workaround</li>
+        <li>Inventory APIs: loan list, dashboard, reports, mobile, settlement, integrations</li>
+        <li>Agree Branch remains optional / unused at go-live</li>
+      </ul>
+
+      <h3>Phase 1 — Visibility foundation <span class="tag phase">Build</span></h3>
+      <ul>
+        <li>Visibility schema, resolver, cache, versioning, fail closed</li>
+        <li>Excel upload → validate → preview → publish</li>
+        <li>Visibility Admin screens in CRM</li>
+        <li>Branch column present but non-mandatory</li>
+      </ul>
+
+      <h3>Phase 2 — Seed from current Godrej reality <span class="tag phase">Migrate</span></h3>
+      <ul>
+        <li>Generate workbook from: Self for TC/FA, Assigned Users for managers, All Cases for primary admin</li>
+        <li>Enrich CM/manager books from Command Tower Product/Bucket/Agency maps where applicable</li>
+        <li>Dry-run publish; reconcile sample user case counts vs old behaviour</li>
+      </ul>
+
+      <h3>Phase 3 — Enforce on operational CRM <span class="tag phase">Cutover</span></h3>
+      <ul>
+        <li>Loan pages (list + detail), search/filters (multi-select ∩ visibility)</li>
+        <li>Dashboards aggregates</li>
+        <li>Assignment remains separate but only on visible loans</li>
+        <li>Settlement list/approve scoped via loan visibility</li>
+      </ul>
+
+      <h3>Phase 4 — Mobile apps <span class="tag phase">Apps</span></h3>
+      <ul>
+        <li>Shared mobile APIs rewired to Visibility</li>
+        <li>Field Agent Android + iOS: SELF; portfolio access demoted</li>
+        <li>Manager Android + iOS: Assigned Users / dimension rules</li>
+        <li>Coordinated app release with backend</li>
+      </ul>
+
+      <h3>Phase 5 — Reports, jobs, integrations hardening <span class="tag phase">Harden</span></h3>
+      <ul>
+        <li>MIS/report row security on Visibility</li>
+        <li>Batch jobs that assume per-manager agency reviewed</li>
+        <li>SMS / Payment / LMS posting: loan-id based; remove brittle portfolio assumptions</li>
+        <li>LMS ingest aligned: attribute stamp, no agency-per-manager creation</li>
+      </ul>
+
+      <h3>Phase 6 — Retire temporary hierarchy workaround <span class="tag phase">Retire</span></h3>
+      <ul>
+        <li>Stop creating agencies per manager for access</li>
+        <li>Collapse to shared/inhouse agency model for ops where agreed</li>
+        <li>Command Tower remains optional for org/reporting only</li>
+        <li>Document steady-state onboarding SOP for Godrej ops</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Parallel run:</strong> Phases 2–3 may briefly compare old vs new counts.
+        Security authority switches to Visibility at the agreed cutover; agency workaround is then frozen for access.
+      </div>
+    </section>
+
+    <!-- 12 MODULES -->
+    <section id="modules">
+      <h2>12. Module-by-module implementation notes</h2>
+      <table>
+        <thead><tr><th>Module</th><th>Implementation</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard</td><td>All widgets query with Visibility Context; multi-select filters only narrow</td></tr>
+          <tr><td>Loan pages</td><td>List/detail/search enforce Visibility; remove portfolio membership as ACL</td></tr>
+          <tr><td>Loan assignment</td><td>Separate APIs; assignee stamp; manager assign limited to visible loans + permitted targets</td></tr>
+          <tr><td>Reporting</td><td>Row scope = Visibility; formula changes only where business requires</td></tr>
+          <tr><td>Filters</td><td>Multi-select Product/Bucket/Agency/Assignee; Branch hidden until enabled; ∩ Visibility</td></tr>
+          <tr><td>Settlement</td><td>Create on visible loan; lists/approvals via Visibility + AuthZ</td></tr>
+          <tr><td>SMS / Payment</td><td>Trigger from allowed loan actions; callbacks by payment/loan id</td></tr>
+          <tr><td>LMS</td><td>Ingest attributes; posting integrations unchanged in spirit; no per-manager agency side effects</td></tr>
+          <tr><td>Command Tower</td><td>Seed + reporting reference; not runtime ACL</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p><strong>Collekto</strong> — Godrej Hierarchy Solution · Detailed briefing</p>
+      <p>
+        Companion files:
+        <code>Collekto-AuthZ-Visibility-Client-Presentation.md</code> ·
+        <code>Collekto-AuthZ-Visibility-Effort-Estimate.md</code> (efforts separate)
+      </p>
+    </footer>
+  </main>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#e6f2ef",
+        primaryTextColor: "#1a2332",
+        primaryBorderColor: "#0f6b5c",
+        lineColor: "#5c6b7a",
+        secondaryColor: "#f7f5f0",
+        tertiaryColor: "#ffffff",
+        fontFamily: "Source Sans 3, Segoe UI, sans-serif"
+      },
+      securityLevel: "loose"
+    });
+
+    (function () {
+      const KEY = "collekto-briefing-sidebar-collapsed";
+      const closeBtn = document.getElementById("sidebar-close");
+      const openBtn = document.getElementById("sidebar-open");
+
+      function setCollapsed(collapsed) {
+        document.body.classList.toggle("sidebar-collapsed", collapsed);
+        try { localStorage.setItem(KEY, collapsed ? "1" : "0"); } catch (e) {}
+        if (closeBtn) closeBtn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      }
+
+      try {
+        if (localStorage.getItem(KEY) === "1") setCollapsed(true);
+      } catch (e) {}
+
+      if (closeBtn) closeBtn.addEventListener("click", () => setCollapsed(true));
+      if (openBtn) openBtn.addEventListener("click", () => setCollapsed(false));
+
+      const links = Array.from(document.querySelectorAll("#side-nav a"));
+      const sections = links
+        .map((a) => document.querySelector(a.getAttribute("href")))
+        .filter(Boolean);
+
+      function setActive() {
+        if (!sections.length) return;
+        const y = window.scrollY + 120;
+        let current = sections[0];
+        for (const s of sections) {
+          if (s.offsetTop <= y) current = s;
+        }
+        links.forEach((a) => {
+          const on = a.getAttribute("href") === "#" + current.id;
+          a.classList.toggle("active", on);
+        });
+      }
+
+      window.addEventListener("scroll", setActive, { passive: true });
+      setActive();
+    })();
+  </script>
+</body>
+</html>
