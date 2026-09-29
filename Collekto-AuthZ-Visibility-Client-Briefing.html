@@ -278,7 +278,20 @@
       margin-top: 3rem; padding-top: 1.4rem; border-top: 1px solid var(--line);
       color: var(--muted); font-size: 0.9rem;
     }
-    code { font-family: var(--font-mono); font-size: 0.88em; background: #eef2f0; padding: 0.1rem 0.35rem; border-radius: 4px; }
+    .diagram-img {
+      width: 100%;
+      max-width: 920px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin: 0.75rem 0 1.25rem;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .diagram-cap {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: -0.75rem 0 1.25rem;
+    }
   </style>
 </head>
 <body>
@@ -293,6 +306,7 @@
     <div class="nav-label">On this page</div>
     <nav id="side-nav">
       <a href="#summary">1. Summary</a>
+      <a href="#visuals">0. Visual flows</a>
       <a href="#problem">2. Problem</a>
       <a href="#solution">3. Solution</a>
       <a href="#solves">4. What it solves</a>
@@ -358,6 +372,84 @@
         </article>
       </div>
       <div class="formula">ACCESS = Authenticated Identity + Required Permission + Matching Visibility</div>
+    </section>
+
+    <!-- VISUALS -->
+    <section id="visuals">
+      <h2>0. Visual flows (human guide)</h2>
+      <p class="muted">Skim these diagrams first. They summarise how hierarchy, books, teams, and allocation fit together.</p>
+
+      <h3>0.1 Three layers</h3>
+      <img class="diagram-img" src="assets/diagram-three-layers.png" alt="Identity Authorization Visibility layers" />
+      <p class="diagram-cap">Identity proves who you are; Authorization what you may do; Visibility which loans appear.</p>
+
+      <h3>0.2 Book rules vs team rules</h3>
+      <img class="diagram-img" src="assets/diagram-book-vs-team.png" alt="Book rules versus team rules" />
+      <p class="diagram-cap">Book = Product/Bucket/Agency on the loan. Team = Assigned Users / Self. Same user can have both (OR).</p>
+      <div class="mermaid">
+flowchart TB
+  Loan[Loan: Product Bucket Agency Assignee]
+  Book[Book rules match attributes]
+  Team[Team rules match assignee]
+  Out[Visible to user]
+  Loan --> Book --> Out
+  Loan --> Team --> Out
+      </div>
+
+      <h3>0.3 How a loan becomes visible</h3>
+      <img class="diagram-img" src="assets/diagram-loan-visibility-flow.png" alt="Loan visibility flow from LMS to users" />
+      <p class="diagram-cap">Assign the worker only. Managers/ACMs see via Visibility — not dual assignment on the loan.</p>
+      <div class="mermaid">
+sequenceDiagram
+  participant LMS
+  participant Loan
+  participant ACM
+  participant T1 as Telecaller
+  participant M1 as Manager
+  LMS->>Loan: Stamp Product Bucket Agency
+  Note over ACM: Sees via book rules
+  Loan->>Loan: Assign T1
+  Loan-->>T1: Self
+  Loan-->>M1: If T1 in Assigned Users
+  Loan-->>ACM: Still via book
+      </div>
+
+      <h3>0.4 Dropdowns: manager vs sub-tenant</h3>
+      <div class="mermaid">
+flowchart LR
+  M[Manager] --> AU[Assigned Users]
+  AU --> D1[Only those TC/FA]
+  ST[ACM RCM ZCM NCM] --> CT[Command Tower subtree]
+  CT --> D2[Scoped managers TC FA]
+  ST --> DU[Direct Assigned Users]
+  DU --> D2
+      </div>
+
+      <h3>0.5 Today workaround vs target</h3>
+      <div class="mermaid">
+flowchart TB
+  subgraph t [Today]
+    A[Agency per manager]
+    P[Managers times portfolios]
+    A --> P
+  end
+  subgraph n [Target]
+    V[Visibility rules]
+    B[Book plus Team]
+    V --> B
+  end
+      </div>
+
+      <h3>0.6 Runtime access</h3>
+      <div class="mermaid">
+flowchart TD
+  S[Open loans] --> I{Identity?}
+  I -->|No| X[Deny]
+  I -->|Yes| P{Permission?}
+  P -->|No| X
+  P -->|Yes| V[Visibility predicate]
+  V --> Q[Query cases]
+      </div>
     </section>
 
     <!-- 2 PROBLEM -->

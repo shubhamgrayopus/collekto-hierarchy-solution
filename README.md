@@ -8,6 +8,7 @@ Godrej hierarchy solution briefing and related documents (Identity, Authorizatio
 |------|-------------|
 | `Collekto-AuthZ-Visibility-Client-Briefing.html` | Detailed client briefing (open in browser) |
 | `Collekto-AuthZ-Visibility-Client-Presentation.md` | Client presentation markdown |
-| `Collekto-AuthZ-Visibility-Impact-Understanding.md` | Internal impact understanding |
+| `Collekto-AuthZ-Visibility-Impact-Understanding.md` | Understanding doc with flow diagrams + images |
 | `Collekto-AuthZ-Visibility-Effort-Estimate.md` | Effort estimate (person-days) |
 | `Collekto-AuthZ-Visibility.pdf` | Source architecture PDF |
+| `assets/` | Diagram images used in the understanding docs |
