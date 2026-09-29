@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Collekto — Godrej Hierarchy Understanding Document</title>
+  <title>Collekto — Godrej Hierarchy Client Briefing</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -317,7 +317,7 @@
     </div>
     <div class="nav-label">On this page</div>
     <nav id="side-nav">
-      <a href="#visuals">Understanding flows</a>
+      <a href="#visuals">Key flows</a>
       <a href="#summary">1. Summary</a>
       <a href="#problem">2. Problem</a>
       <a href="#solution">3. Solution</a>
@@ -336,10 +336,10 @@
 
   <main>
     <header class="hero">
-      <p class="eyebrow">Godrej · Understanding document</p>
+      <p class="eyebrow">Godrej · Client briefing</p>
       <h1>Hierarchy solution — how it works</h1>
       <p class="lede">
-        Visual + detailed guide: replace the temporary per-manager agency workaround,
+        Client briefing: move from the per-manager agency interim model,
         configure who sees which cases, how teams and sub-tenants appear in dropdowns,
         how allocation works, and how we roll out phase by phase.
       </p>
@@ -353,7 +353,7 @@
 
     <!-- VISUALS = primary understanding -->
     <section id="visuals">
-      <h2>Understanding flows (start here)</h2>
+      <h2>Key flows (start here)</h2>
       <p>These diagrams are the fastest way to understand the solution. Later sections expand each idea.</p>
 
       <h3>1. Three layers</h3>
@@ -362,52 +362,20 @@
       <div class="formula">ACCESS = Identity + Permission + Matching Visibility</div>
 
       <h3>2. Today vs target</h3>
-      <img class="diagram-img" src="assets/diagram-today-vs-target.png" alt="Temporary agency workaround versus Visibility solution" />
+      <img class="diagram-img" src="assets/diagram-today-vs-target.png" alt="Current interim agency model versus Visibility solution" />
       <p class="diagram-cap">Today: agency per manager → portfolios multiply. Target: Visibility (team + Command Tower rules) — no agency-per-manager for access.</p>
 
       <h3>3. Command Tower rules vs team rules</h3>
       <img class="diagram-img" src="assets/diagram-ct-vs-team.png" alt="Command Tower rules versus team rules" />
       <p class="diagram-cap"><strong>Command Tower rules</strong> = Product/Bucket/Agency on the loan (from CT map). <strong>Team rules</strong> = Assigned Users / Self. Same user can have both (OR).</p>
-      <div class="mermaid">
-flowchart TB
-  Loan[Loan attributes + assignee]
-  CTRules[Command Tower rules]
-  Team[Team / Self rules]
-  Out[Visible]
-  Loan --> CTRules --> Out
-  Loan --> Team --> Out
-      </div>
 
       <h3>4. How a loan becomes visible after allocation</h3>
       <img class="diagram-img" src="assets/diagram-loan-visibility-flow.png" alt="Loan visibility flow from LMS to users" />
-      <p class="diagram-cap">Assign the <strong>worker only</strong> (TC/FA). Managers/ACMs <em>see</em> via Visibility — not dual assignees on the loan.</p>
-      <div class="mermaid">
-sequenceDiagram
-  participant LMS
-  participant Loan
-  participant AgencyAlloc as Agency Allocation
-  participant ACM
-  participant T1 as Telecaller
-  participant M1 as Manager
-  LMS->>Loan: Loan details only (e.g. Product Bucket)
-  Loan->>Loan: Agency defaults to Inhouse
-  Note over AgencyAlloc,Loan: Future external agency → Agency Allocation page
-  Note over ACM,Loan: ACM sees via Command Tower rules even if unassigned
-  Loan->>Loan: Assign worker T1
-  Loan-->>T1: Self
-  Loan-->>M1: T1 in Assigned Users
-  Loan-->>ACM: Still via Command Tower rules
-      </div>
+      <p class="diagram-cap">Assign the <strong>worker only</strong> (TC/FA). Managers/ACMs <em>see</em> via Visibility — not dual assignees on the loan. LMS = loan details only; Agency defaults to Inhouse.</p>
 
       <h3>5. Who appears in dropdowns</h3>
       <img class="diagram-img" src="assets/diagram-dropdowns.png" alt="Manager and sub-tenant dropdown population" />
       <p class="diagram-cap">Manager = Assigned Users only. Sub-tenant = Command Tower scope + people resolver (+ direct Assigned Users if no manager).</p>
-      <div class="mermaid">
-flowchart LR
-  M[Manager] --> AU[Assigned Users] --> D1[Only those TC FA]
-  ST[Sub-tenant] --> CT[Command Tower] --> D2[Scoped people]
-  ST --> DU[Direct Assigned Users] --> D2
-      </div>
 
       <h3>6. Runtime check on every screen</h3>
       <div class="mermaid">
@@ -432,7 +400,7 @@ flowchart LR
     <section id="summary">
       <h2>1. Executive summary</h2>
       <p>
-        Godrej needs a clear collection hierarchy. Today a <strong>temporary workaround</strong> creates a
+        Godrej needs a clear collection hierarchy. Today an <strong>interim model</strong> creates a
         <strong>separate agency for each manager</strong>, so portfolios multiply as
         <strong>managers × product/bucket</strong>.
       </p>
@@ -484,8 +452,8 @@ flowchart TB
         admins see wider Command Tower scope; mixed product/bucket under one manager without inventing fake agencies.
       </p>
 
-      <h3>2.2 Temporary workaround today</h3>
-      <img class="diagram-img" src="assets/diagram-today-vs-target.png" alt="Today workaround versus target" />
+      <h3>2.2 Current interim model</h3>
+      <img class="diagram-img" src="assets/diagram-today-vs-target.png" alt="Current interim model versus target" />
       <div class="callout warn">
         <strong>Temporary solution:</strong> a <strong>separate agency is created for each manager</strong>
         so that manager’s telecallers and field agents (and portfolios) sit under that agency.
@@ -569,7 +537,7 @@ flowchart TB
         <strong>LMS boundary:</strong> LMS sends <strong>loan details only</strong> (product, bucket, balances, customer fields, etc.).
         It does <strong>not</strong> allocate agency. Agency is set in Collekto: <strong>Inhouse by default</strong>;
         when Godrej later onboards an external agency, ops use the <strong>Agency Allocation</strong> page to move loans to that agency.
-        Today’s multi-agency setup exists only because of the per-manager agency workaround — that goes away with Visibility.
+        Today’s multi-agency setup exists only because of the per-manager agency interim model — that goes away with Visibility.
       </div>
     </section>
 
@@ -606,7 +574,7 @@ flowchart TB
           </tr>
           <tr>
             <td>Reports / MIS</td>
-            <td>Row scope tied to temporary hierarchy</td>
+            <td>Row scope tied to the interim hierarchy model</td>
             <td>Report queries use Visibility Context</td>
           </tr>
           <tr>
@@ -636,7 +604,7 @@ flowchart TB
           </tr>
           <tr>
             <td>LMS loan ingest</td>
-            <td>Risk of recreating agency×portfolio explosion; agency tied to multi-agency workaround</td>
+            <td>Risk of recreating agency×portfolio explosion; agency tied to multi-agency interim model</td>
             <td>LMS = loan details only; agency defaults to <strong>Inhouse</strong>; no per-manager agency on ingest</td>
           </tr>
           <tr>
@@ -662,7 +630,7 @@ flowchart TB
     <section id="onboarding">
       <h2>5. How user onboarding changes</h2>
 
-      <h3>5.1 Today (temporary model)</h3>
+      <h3>5.1 Today (interim model)</h3>
       <div class="flow-steps">
         <div class="flow-step"><div class="n">1</div><div>Create agency for the manager</div></div>
         <div class="flow-step"><div class="n">2</div><div>Create portfolios for each Product × Bucket under that agency</div></div>
@@ -691,7 +659,7 @@ flowchart TB
           <tr>
             <td>Manager</td>
             <td>Yes (shared/inhouse agency ok)</td>
-            <td>Assigned Users = their TC/FA; optional Product+Bucket rows</td>
+            <td>Assigned Users = their TC/FA; <strong>Product+Bucket (+ Agency Inhouse) required if they allocate unassigned loans</strong></td>
             <td><span class="tag retire">Retire</span> dedicated agency + portfolio fan-out</td>
           </tr>
           <tr>
@@ -719,6 +687,13 @@ flowchart TB
         <strong>Default automation (recommended):</strong> on create of Telecaller / Field Agent,
         system auto-adds <em>Self Assigned = Yes</em> into a draft visibility set (still published with audit).
         Manager team links are maintained via Assigned Users on the manager’s rules.
+      </div>
+      <div class="callout warn">
+        <strong>Managers who allocate:</strong> Assigned Users alone only shows loans already assigned to that manager’s TC/FA.
+        Unassigned loans have no assignee, so they never match Assigned Users.
+        A manager who needs to pick up and allocate unassigned loans <strong>must</strong> also have
+        <strong>Product + Bucket</strong> (and typically Agency = Inhouse) Command Tower rule rows — otherwise they cannot see those loans to assign them.
+        Assigned Users-only is enough only for managers who only supervise already-assigned team work.
       </div>
     </section>
 
@@ -794,7 +769,10 @@ flowchart TB
           </tr>
           <tr>
             <td>Loan list / Manager App team loans</td>
-            <td>Cases where assignee ∈ {T1, T2, F1, F2} <em>and/or</em> Product+Bucket rules on M1</td>
+            <td>
+              <strong>Assigned team work:</strong> assignee ∈ {T1, T2, F1, F2}.<br/>
+              <strong>Unassigned pool (to allocate):</strong> only if M1 also has Product+Bucket (+ Agency) Command Tower rows — Assigned Users alone cannot surface unassigned loans.
+            </td>
           </tr>
           <tr>
             <td>Another manager M2</td>
@@ -1260,7 +1238,7 @@ flowchart TB
         <tbody>
           <tr><td>Field Agent</td><td>Pending / PTP / visits</td><td>Auth ok → Visibility SELF → only assigned loans</td></tr>
           <tr><td>Telecaller</td><td>All Cases / dialer lists</td><td>Visibility SELF → assigned loans</td></tr>
-          <tr><td>Manager</td><td>Team loans / Manager App</td><td>Visibility Assigned Users (± Command Tower rules) → team cases</td></tr>
+          <tr><td>Manager</td><td>Team loans / allocate / Manager App</td><td>Assigned Users for team cases; Product+Bucket (+ Agency) required to see unassigned loans to allocate</td></tr>
           <tr><td>Tenant Admin</td><td>Dashboards / reports</td><td>All Cases → full tenant (explicit)</td></tr>
           <tr><td>Any user</td><td>Applies multi-select filters</td><td>Filters ∩ Visibility — never expands scope</td></tr>
         </tbody>
@@ -1348,7 +1326,7 @@ flowchart TB
 
       <h3>10.4a Agency Allocation page (new)</h3>
       <p>
-        Today, Godrej runs a <strong>multiple-agency model</strong> as part of the temporary per-manager workaround.
+        Today, Godrej runs a <strong>multiple-agency model</strong> as part of the per-manager interim model.
         With Visibility, that goes away for access: keep a single shared agency — <strong>Inhouse</strong> — as the default on loans.
       </p>
       <div class="flow-steps">
@@ -1410,12 +1388,12 @@ sequenceDiagram
     <!-- 11 PHASES -->
     <section id="phases">
       <h2>11. Phase-wise rollout into the system</h2>
-      <p>Rollout is incremental so Godrej keeps operating while the temporary agency model is retired.</p>
+      <p>Rollout is incremental so Godrej keeps operating while the interim agency model is retired.</p>
 
       <h3>Phase 0 — Align &amp; inventory <span class="tag phase">Prep</span></h3>
       <ul>
         <li>Confirm roles, sample manager teams, product/bucket masters</li>
-        <li>Inventory Command Tower usage vs portfolio/agency workaround</li>
+        <li>Inventory Command Tower usage vs portfolio/agency interim model</li>
         <li>Inventory APIs: loan list, dashboard, reports, mobile, settlement, integrations</li>
         <li>Agree Branch remains optional / unused at go-live</li>
       </ul>
@@ -1430,7 +1408,7 @@ sequenceDiagram
 
       <h3>Phase 2 — Seed from current Godrej reality <span class="tag phase">Migrate</span></h3>
       <ul>
-        <li>Generate workbook from: Self for TC/FA, Assigned Users for managers, All Cases for primary admin</li>
+        <li>Generate workbook from: Self for TC/FA, Assigned Users for managers, Product+Bucket for managers who allocate, All Cases for primary admin</li>
         <li>Enrich CM/manager Command Tower rules from Command Tower Product/Bucket/Agency maps where applicable</li>
         <li>Dry-run publish; reconcile sample user case counts vs old behaviour</li>
       </ul>
@@ -1460,7 +1438,7 @@ sequenceDiagram
         <li>Agency Allocation page: ship for future external-agency moves (steady state = Inhouse)</li>
       </ul>
 
-      <h3>Phase 6 — Retire temporary hierarchy workaround <span class="tag phase">Retire</span></h3>
+      <h3>Phase 6 — Retire interim hierarchy model <span class="tag phase">Retire</span></h3>
       <ul>
         <li>Stop creating agencies per manager for access</li>
         <li>Collapse to <strong>Inhouse</strong> as the default agency; use Agency Allocation only when external agencies exist</li>
@@ -1470,7 +1448,7 @@ sequenceDiagram
 
       <div class="callout">
         <strong>Parallel run:</strong> Phases 2–3 may briefly compare old vs new counts.
-        Security authority switches to Visibility at the agreed cutover; agency workaround is then frozen for access.
+        Security authority switches to Visibility at the agreed cutover; interim agency model is then frozen for access.
       </div>
     </section>
 
@@ -1495,8 +1473,7 @@ sequenceDiagram
     </section>
 
     <footer>
-      <p><strong>Collekto</strong> — Godrej Hierarchy · Understanding document (HTML)</p>
-      <p>Open this file in a browser. Diagrams live in <code>assets/</code>.</p>
+      <p><strong>Collekto</strong> — Godrej Hierarchy · Client briefing</p>
     </footer>
   </main>
 

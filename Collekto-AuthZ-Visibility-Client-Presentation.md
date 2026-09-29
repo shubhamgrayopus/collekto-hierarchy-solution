@@ -10,7 +10,7 @@
 
 ## 1. Executive summary
 
-To support Godrej’s collection hierarchy today, a **temporary workaround** is in use: creating a **separate agency for each manager**. Because a portfolio is Agency × Product × Bucket, that approach multiplies portfolios by the number of managers and creates ongoing **maintenance** overhead for people and portfolio setup.
+To support Godrej’s collection hierarchy today, a **current interim model** is in use: creating a **separate agency for each manager**. Because a portfolio is Agency × Product × Bucket, that approach multiplies portfolios by the number of managers and creates ongoing **maintenance** overhead for people and portfolio setup.
 
 **To solve this hierarchy issue specific to Godrej**, we will implement a Unified Identity, Authorization and Visibility capability that separates three concerns:
 
@@ -40,9 +40,9 @@ Portfolio = Tenant + Agency + Product + Bucket
 
 Managers, telecallers, and field agents are linked to portfolios so they can see the right work. Godrej’s operating hierarchy (managers with their own telecallers / field agents, across products and buckets) does not map cleanly onto a shared agency model.
 
-### 2.2 Temporary workaround in place today
+### 2.2 Current interim model in place today
 
-As a **temporary solution** for Godrej’s hierarchy needs:
+As a **current interim model** for Godrej’s hierarchy needs:
 
 > A **separate agency is created for each manager**.
 
@@ -62,11 +62,11 @@ As a **temporary solution** for Godrej’s hierarchy needs:
 | 2 | Maintenance burden | Team changes, product/bucket updates, and people moves require repeated agency/portfolio upkeep |
 | 3 | Hierarchy expressed via agencies | Manager structure is simulated through agencies instead of an explicit visibility model |
 | 4 | Telecaller ↔ Field Agent linkage remains indirect | Teams are grouped under a manager’s agency/portfolios; case visibility is not configured as clear assignee-based rules |
-| 5 | Web and mobile must follow the same workaround | CRM Web, Manager App, and Field Agent App all inherit this portfolio/agency structure |
+| 5 | Web and mobile must follow the same interim model | CRM Web, Manager App, and Field Agent App all inherit this portfolio/agency structure |
 
 ### 2.4 What we are solving
 
-This initiative implements Identity / Authorization / Visibility **specifically to solve Godrej’s hierarchy issue**, so the temporary per-manager agency pattern is no longer required for access control.
+This initiative implements Identity / Authorization / Visibility **specifically to solve Godrej’s hierarchy issue**, so the current per-manager agency interim model is no longer required for access control.
 
 Every application will still answer consistently:
 
@@ -78,7 +78,7 @@ Every application will still answer consistently:
 
 ## 3. Solution we are presenting
 
-**Scope:** Implementation to address the **Godrej hierarchy** problem described above — replacing the temporary per-manager agency / portfolio workaround with configurable visibility.
+**Scope:** Implementation to address the **Godrej hierarchy** problem described above — replacing the current per-manager agency / portfolio interim model with configurable visibility.
 
 ### 3.1 Three-layer architecture
 
@@ -205,12 +205,12 @@ Request
 
 ### 4.5 Relationship to portfolios after this change
 
-| Temporary Godrej workaround today | After this solution |
+| Current Godrej interim model | After this solution |
 |----------------------------------|---------------------|
 | Separate agency per manager to isolate hierarchy | Managers configured via **visibility rules** (e.g. Assigned Users, Product/Bucket) |
 | Portfolios multiplied as Managers × Product × Bucket | No need to create an agency per manager for access |
 | People access via portfolio membership under those agencies | People access via published visibility configuration |
-| Agency/product/bucket on loans | Product/Bucket from LMS loan details; **Agency = Inhouse by default** in Collekto (not from LMS). Future external agencies via **Agency Allocation** page — not as the hierarchy workaround |
+| Agency/product/bucket on loans | Product/Bucket from LMS loan details; **Agency = Inhouse by default** in Collekto (not from LMS). Future external agencies via **Agency Allocation** page — not as the hierarchy interim model |
 
 **LMS vs Agency Allocation:** LMS provides **loan details only**. Agency is set in Collekto (`Inhouse` by default). A new **Agency Allocation** page is introduced so that, when Godrej later brings in an external agency, loans can be moved to that agency without returning to the multi-agency-per-manager model.
 
@@ -338,13 +338,13 @@ Cache invalidated → all apps use new rules
 | Tenant Admin (primary) | All cases (explicit) | Must be explicitly configured; blank ≠ all |
 | NCM / ZCM / RCM / ACM style users | Configured Command Tower rules (agency / product / bucket / assignees) | Scope comes from rules, not from title alone |
 | Super Manager | Configured rules | Less portfolio membership maintenance |
-| Manager | Assigned users ± dimensions | Web + Manager app lists follow rules |
+| Manager | Assigned users; Product+Bucket **required to allocate unassigned loans** | Web + Manager app lists follow rules |
 | Telecaller | Self | Web lists follow assignee |
 | Field Agent | Self | Field app lists follow assignee |
 
 ### 6.6 What improves for Godrej operations
 
-- No longer need a **separate agency per manager** as a hierarchy workaround  
+- No longer need a **separate agency per manager** as a hierarchy interim model  
 - Portfolio set no longer multiplies as **managers × product/bucket combinations** for access  
 - Clear Excel-based configuration of who can see what  
 - Same rules for web and both mobile apps  
@@ -411,10 +411,10 @@ M1 rule B: Product PL AND Bucket B1|B2 AND Agency Inhouse
 | Ask | Recommendation |
 |-----|----------------|
 | Implement Identity / Authorization / Visibility to solve Godrej hierarchy? | **Yes** |
-| Retire temporary per-manager agency workaround for access? | **Yes** |
+| Retire per-manager agency interim model for access? | **Yes** |
 | Configure visibility via validated Excel publish into DB? | **Yes** |
 | Apply same engine to CRM Web, Manager app, Field Agent app? | **Yes** |
-| Keep portfolios/agencies for loan structure where needed? | Yes for data — not as the hierarchy workaround |
+| Keep portfolios/agencies for loan structure where needed? | Yes for data — not as the hierarchy interim model |
 
 ---
 
@@ -425,7 +425,7 @@ M1 rule B: Product PL AND Bucket B1|B2 AND Agency Inhouse
 | Identity | Database-backed user/profile used across apps |
 | Authorization | Role and permissions for *actions* |
 | Visibility | Rules for *which cases* appear |
-| Per-manager agency (temporary) | Current Godrej hierarchy workaround |
+| Per-manager agency (interim) | Current Godrej hierarchy interim model |
 | Publish | Activating a new visibility version after validation |
 
 ---

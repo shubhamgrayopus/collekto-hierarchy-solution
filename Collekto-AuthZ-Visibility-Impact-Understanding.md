@@ -33,7 +33,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-  subgraph today [Temporary workaround TODAY]
+  subgraph today [Current interim model TODAY]
     M1[Manager M1]
     AG[Create agency for M1]
     P[Portfolios = Agency × Product × Bucket]
@@ -103,7 +103,7 @@ sequenceDiagram
 
 **Important:** the loan is assigned to the **telecaller/FA only**. Managers and ACMs **see** it through Visibility — they are not dual-assignees on the loan.
 
-**LMS / Agency:** LMS sends **loan details only**. Agency is **not** allocated from LMS. Going forward, agency defaults to **Inhouse**. A new **Agency Allocation** page will assign loans to an external agency if Godrej brings one in later. Today’s multi-agency model exists only because of the temporary per-manager agency workaround.
+**LMS / Agency:** LMS sends **loan details only**. Agency is **not** allocated from LMS. Going forward, agency defaults to **Inhouse**. A new **Agency Allocation** page will assign loans to an external agency if Godrej brings one in later. Today’s multi-agency model exists only because of the current per-manager agency interim model.
 
 ---
 
@@ -196,7 +196,7 @@ No dummy manager and no per-manager agency required.
 
 Godrej needs managers, telecallers, field agents, and sub-tenant roles (NCM/ZCM/RCM/ACM style) to see the right cases and the right people in dropdowns.
 
-### 1.2 Temporary workaround today
+### 1.2 Current interim model
 
 A **separate agency is created for each manager**. Because:
 
@@ -291,7 +291,7 @@ flowchart TB
 |---------|-------------------|
 | Primary Tenant Admin | All Cases |
 | NCM/ZCM/RCM/ACM | Command Tower rules (± direct Assigned Users) |
-| Manager | Assigned Users (± optional Command Tower rules) |
+| Manager | Assigned Users; **Product+Bucket required if they allocate unassigned loans** |
 | Telecaller / Field Agent | Self |
 | TC/FA reporting to ACM directly | ACM Assigned Users + their Self |
 
@@ -381,7 +381,7 @@ Portfolio picker is demoted or removed as a security boundary on both platforms.
 |---------|------|------|
 | Tenant Admin | All Cases | Full tenant + Visibility Admin |
 | Sub-tenant CM | Command Tower rules ± Assigned Users | Scoped dropdowns + Command Tower scope cases |
-| Manager | Assigned Users | Only their TC/FA |
+| Manager | Assigned Users (+ Product/Bucket if they allocate) | Team’s assigned cases; unassigned pool only with Product+Bucket rows |
 | TC / FA | Self | Own work only |
 
 | Feature | Impact |
@@ -414,7 +414,7 @@ flowchart LR
 
 ## 10. Validation notes
 
-1. Solves temporary agency-per-manager hierarchy for access.  
+1. Addresses the current agency-per-manager interim model for access.  
 2. Sub-tenants do **not** see all managers/agents — only their Command Tower scope.  
 3. TC/FA can report directly to ACM/RCM via Assigned Users.  
 4. Branch column exists but is non-mandatory for Godrej now.  
