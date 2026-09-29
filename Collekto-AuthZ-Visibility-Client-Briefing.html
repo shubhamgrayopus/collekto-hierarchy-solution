@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Collekto — Godrej Hierarchy Solution | Detailed Briefing</title>
+  <title>Collekto — Godrej Hierarchy Understanding Document</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -305,8 +305,8 @@
     </div>
     <div class="nav-label">On this page</div>
     <nav id="side-nav">
+      <a href="#visuals">Understanding flows</a>
       <a href="#summary">1. Summary</a>
-      <a href="#visuals">0. Visual flows</a>
       <a href="#problem">2. Problem</a>
       <a href="#solution">3. Solution</a>
       <a href="#solves">4. What it solves</a>
@@ -324,12 +324,12 @@
 
   <main>
     <header class="hero">
-      <p class="eyebrow">Godrej · Detailed hierarchy solution briefing</p>
-      <h1>Identity, Authorization &amp; Visibility for Godrej Hierarchy</h1>
+      <p class="eyebrow">Godrej · Understanding document</p>
+      <h1>Hierarchy solution — how it works</h1>
       <p class="lede">
-        A complete operating model to replace the temporary per-manager agency workaround,
-        configure who can see which cases, change how users are onboarded, account for Command Tower,
-        and roll out phase by phase across CRM Web, Manager App, and Field Agent App (iOS &amp; Android).
+        Visual + detailed guide: replace the temporary per-manager agency workaround,
+        configure who sees which cases, how teams and sub-tenants appear in dropdowns,
+        how allocation works, and how we roll out phase by phase.
       </p>
       <div class="meta">
         <span class="chip"><strong>Tenant:</strong> Godrej</span>
@@ -339,66 +339,36 @@
       </div>
     </header>
 
-    <!-- 1 SUMMARY -->
-    <section id="summary">
-      <h2>1. Executive summary</h2>
-      <p>
-        Godrej needs a clear collection hierarchy (managers with telecallers and field agents,
-        across products and buckets). Today this is achieved with a <strong>temporary workaround</strong>:
-        create a <strong>separate agency for each manager</strong>. Because
-        <code>Portfolio = Agency × Product × Bucket</code>, portfolios multiply as
-        <strong>managers × product/bucket combinations</strong>, which creates heavy maintenance.
-      </p>
-      <p>
-        <strong>To solve this hierarchy issue specific to Godrej</strong>, Collekto will implement
-        three platform layers — Identity, Authorization, and Visibility — so access is configured
-        explicitly and the per-manager agency pattern is no longer required for access control.
-      </p>
-      <div class="grid-3">
-        <article class="card">
-          <div class="q">Identity</div>
-          <h3>Who are you?</h3>
-          <p>Profiles and sessions in the <strong>database</strong>. One user id used by Web and mobile apps.</p>
-        </article>
-        <article class="card">
-          <div class="q">Authorization</div>
-          <h3>What can you do?</h3>
-          <p>Role → permissions (view case, assign, settle, open reports, admin modules).</p>
-        </article>
-        <article class="card">
-          <div class="q">Visibility</div>
-          <h3>Which cases?</h3>
-          <p>Rules on Assignee, Product, Bucket, Agency, and optional Branch / All Cases.</p>
-        </article>
-      </div>
-      <div class="formula">ACCESS = Authenticated Identity + Required Permission + Matching Visibility</div>
-    </section>
-
-    <!-- VISUALS -->
+    <!-- VISUALS = primary understanding -->
     <section id="visuals">
-      <h2>0. Visual flows (human guide)</h2>
-      <p class="muted">Skim these diagrams first. They summarise how hierarchy, books, teams, and allocation fit together.</p>
+      <h2>Understanding flows (start here)</h2>
+      <p>These diagrams are the fastest way to understand the solution. Later sections expand each idea.</p>
 
-      <h3>0.1 Three layers</h3>
+      <h3>1. Three layers</h3>
       <img class="diagram-img" src="assets/diagram-three-layers.png" alt="Identity Authorization Visibility layers" />
-      <p class="diagram-cap">Identity proves who you are; Authorization what you may do; Visibility which loans appear.</p>
+      <p class="diagram-cap"><strong>Identity</strong> = who you are. <strong>Authorization</strong> = what you may do. <strong>Visibility</strong> = which loans appear.</p>
+      <div class="formula">ACCESS = Identity + Permission + Matching Visibility</div>
 
-      <h3>0.2 Book rules vs team rules</h3>
+      <h3>2. Today vs target</h3>
+      <img class="diagram-img" src="assets/diagram-today-vs-target.png" alt="Temporary agency workaround versus Visibility solution" />
+      <p class="diagram-cap">Today: agency per manager → portfolios multiply. Target: Visibility (team + book) — no agency-per-manager for access.</p>
+
+      <h3>3. Book rules vs team rules</h3>
       <img class="diagram-img" src="assets/diagram-book-vs-team.png" alt="Book rules versus team rules" />
-      <p class="diagram-cap">Book = Product/Bucket/Agency on the loan. Team = Assigned Users / Self. Same user can have both (OR).</p>
+      <p class="diagram-cap"><strong>Book</strong> = Product/Bucket/Agency on the loan. <strong>Team</strong> = Assigned Users / Self. Same user can have both (OR).</p>
       <div class="mermaid">
 flowchart TB
-  Loan[Loan: Product Bucket Agency Assignee]
-  Book[Book rules match attributes]
-  Team[Team rules match assignee]
-  Out[Visible to user]
+  Loan[Loan attributes + assignee]
+  Book[Book rules]
+  Team[Team / Self rules]
+  Out[Visible]
   Loan --> Book --> Out
   Loan --> Team --> Out
       </div>
 
-      <h3>0.3 How a loan becomes visible</h3>
+      <h3>4. How a loan becomes visible after allocation</h3>
       <img class="diagram-img" src="assets/diagram-loan-visibility-flow.png" alt="Loan visibility flow from LMS to users" />
-      <p class="diagram-cap">Assign the worker only. Managers/ACMs see via Visibility — not dual assignment on the loan.</p>
+      <p class="diagram-cap">Assign the <strong>worker only</strong> (TC/FA). Managers/ACMs <em>see</em> via Visibility — not dual assignees on the loan.</p>
       <div class="mermaid">
 sequenceDiagram
   participant LMS
@@ -407,49 +377,73 @@ sequenceDiagram
   participant T1 as Telecaller
   participant M1 as Manager
   LMS->>Loan: Stamp Product Bucket Agency
-  Note over ACM: Sees via book rules
-  Loan->>Loan: Assign T1
+  Note over ACM,Loan: ACM sees via book even if unassigned
+  Loan->>Loan: Assign worker T1
   Loan-->>T1: Self
-  Loan-->>M1: If T1 in Assigned Users
+  Loan-->>M1: T1 in Assigned Users
   Loan-->>ACM: Still via book
       </div>
 
-      <h3>0.4 Dropdowns: manager vs sub-tenant</h3>
+      <h3>5. Who appears in dropdowns</h3>
+      <img class="diagram-img" src="assets/diagram-dropdowns.png" alt="Manager and sub-tenant dropdown population" />
+      <p class="diagram-cap">Manager = Assigned Users only. Sub-tenant = Command Tower book + people resolver (+ direct Assigned Users if no manager).</p>
       <div class="mermaid">
 flowchart LR
-  M[Manager] --> AU[Assigned Users]
-  AU --> D1[Only those TC/FA]
-  ST[ACM RCM ZCM NCM] --> CT[Command Tower subtree]
-  CT --> D2[Scoped managers TC FA]
-  ST --> DU[Direct Assigned Users]
-  DU --> D2
+  M[Manager] --> AU[Assigned Users] --> D1[Only those TC FA]
+  ST[Sub-tenant] --> CT[Command Tower] --> D2[Scoped people]
+  ST --> DU[Direct Assigned Users] --> D2
       </div>
 
-      <h3>0.5 Today workaround vs target</h3>
-      <div class="mermaid">
-flowchart TB
-  subgraph t [Today]
-    A[Agency per manager]
-    P[Managers times portfolios]
-    A --> P
-  end
-  subgraph n [Target]
-    V[Visibility rules]
-    B[Book plus Team]
-    V --> B
-  end
-      </div>
-
-      <h3>0.6 Runtime access</h3>
+      <h3>6. Runtime check on every screen</h3>
       <div class="mermaid">
 flowchart TD
-  S[Open loans] --> I{Identity?}
+  S[Open loans / dashboard / report] --> I{Identity OK?}
   I -->|No| X[Deny]
   I -->|Yes| P{Permission?}
   P -->|No| X
   P -->|Yes| V[Visibility predicate]
-  V --> Q[Query cases]
+  V --> F[UI filters narrow only]
+  F --> Q[Return cases]
       </div>
+
+      <h3>7. Publish configuration</h3>
+      <div class="mermaid">
+flowchart LR
+  X[Excel] --> U[Upload] --> V{Validate} --> P[Preview] --> Pub[Publish] --> Apps[Web + 4 apps]
+      </div>
+    </section>
+
+    <!-- 1 SUMMARY -->
+    <section id="summary">
+      <h2>1. Executive summary</h2>
+      <p>
+        Godrej needs a clear collection hierarchy. Today a <strong>temporary workaround</strong> creates a
+        <strong>separate agency for each manager</strong>, so portfolios multiply as
+        <strong>managers × product/bucket</strong>.
+      </p>
+      <p>
+        <strong>To solve this hierarchy issue for Godrej</strong>, we implement Identity, Authorization, and Visibility
+        so the per-manager agency pattern is no longer required for access control.
+      </p>
+      <img class="diagram-img" src="assets/diagram-three-layers.png" alt="Three layers" />
+      <div class="grid-3">
+        <article class="card">
+          <div class="q">Identity</div>
+          <h3>Who are you?</h3>
+          <p>Profiles and sessions in the <strong>database</strong>.</p>
+        </article>
+        <article class="card">
+          <div class="q">Authorization</div>
+          <h3>What can you do?</h3>
+          <p>Role → permissions.</p>
+        </article>
+        <article class="card">
+          <div class="q">Visibility</div>
+          <h3>Which cases?</h3>
+          <p>Book rules + team rules + Self / All Cases.</p>
+        </article>
+      </div>
+      <div class="formula">ACCESS = Authenticated Identity + Required Permission + Matching Visibility</div>
     </section>
 
     <!-- 2 PROBLEM -->
@@ -476,6 +470,7 @@ flowchart TB
       </p>
 
       <h3>2.2 Temporary workaround today</h3>
+      <img class="diagram-img" src="assets/diagram-today-vs-target.png" alt="Today workaround versus target" />
       <div class="callout warn">
         <strong>Temporary solution:</strong> a <strong>separate agency is created for each manager</strong>
         so that manager’s telecallers and field agents (and portfolios) sit under that agency.
@@ -720,6 +715,7 @@ flowchart TB
       </p>
 
       <h3>5A.1 Manager — only assigned telecallers &amp; field agents</h3>
+      <img class="diagram-img" src="assets/diagram-dropdowns.png" alt="Who appears in dropdowns" />
       <div class="callout">
         <strong>Rule:</strong> A manager’s TC/FA dropdowns show <em>only</em> the users listed in that manager’s
         Visibility <strong>Assigned Users</strong> configuration — not every telecaller/field agent in the tenant.
@@ -1305,6 +1301,7 @@ flowchart TB
       </div>
 
       <h3>10.4 LMS loan arrives (replaces import)</h3>
+      <img class="diagram-img" src="assets/diagram-loan-visibility-flow.png" alt="Loan visibility after LMS and assignment" />
       <div class="flow-steps">
         <div class="flow-step"><div class="n">1</div><div>LMS upserts loan by external id</div></div>
         <div class="flow-step"><div class="n">2</div><div>Stamp Product, Bucket, Agency (Branch only if present later)</div></div>
@@ -1440,12 +1437,8 @@ sequenceDiagram
     </section>
 
     <footer>
-      <p><strong>Collekto</strong> — Godrej Hierarchy Solution · Detailed briefing</p>
-      <p>
-        Companion files:
-        <code>Collekto-AuthZ-Visibility-Client-Presentation.md</code> ·
-        <code>Collekto-AuthZ-Visibility-Effort-Estimate.md</code> (efforts separate)
-      </p>
+      <p><strong>Collekto</strong> — Godrej Hierarchy · Understanding document (HTML)</p>
+      <p>Open this file in a browser. Diagrams live in <code>assets/</code>.</p>
     </footer>
   </main>
 
