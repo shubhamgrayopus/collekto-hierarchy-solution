@@ -351,18 +351,18 @@
 
       <h3>2. Today vs target</h3>
       <img class="diagram-img" src="assets/diagram-today-vs-target.png" alt="Temporary agency workaround versus Visibility solution" />
-      <p class="diagram-cap">Today: agency per manager → portfolios multiply. Target: Visibility (team + book) — no agency-per-manager for access.</p>
+      <p class="diagram-cap">Today: agency per manager → portfolios multiply. Target: Visibility (team + Command Tower rules) — no agency-per-manager for access.</p>
 
-      <h3>3. Book rules vs team rules</h3>
-      <img class="diagram-img" src="assets/diagram-book-vs-team.png" alt="Book rules versus team rules" />
-      <p class="diagram-cap"><strong>Book</strong> = Product/Bucket/Agency on the loan. <strong>Team</strong> = Assigned Users / Self. Same user can have both (OR).</p>
+      <h3>3. Command Tower rules vs team rules</h3>
+      <img class="diagram-img" src="assets/diagram-book-vs-team.png" alt="Command Tower rules versus team rules" />
+      <p class="diagram-cap"><strong>Command Tower rules</strong> = Product/Bucket/Agency on the loan (from CT map). <strong>Team rules</strong> = Assigned Users / Self. Same user can have both (OR).</p>
       <div class="mermaid">
 flowchart TB
   Loan[Loan attributes + assignee]
-  Book[Book rules]
+  CTRules[Command Tower rules]
   Team[Team / Self rules]
   Out[Visible]
-  Loan --> Book --> Out
+  Loan --> CTRules --> Out
   Loan --> Team --> Out
       </div>
 
@@ -377,16 +377,16 @@ sequenceDiagram
   participant T1 as Telecaller
   participant M1 as Manager
   LMS->>Loan: Stamp Product Bucket Agency
-  Note over ACM,Loan: ACM sees via book even if unassigned
+  Note over ACM,Loan: ACM sees via Command Tower rules even if unassigned
   Loan->>Loan: Assign worker T1
   Loan-->>T1: Self
   Loan-->>M1: T1 in Assigned Users
-  Loan-->>ACM: Still via book
+  Loan-->>ACM: Still via Command Tower rules
       </div>
 
       <h3>5. Who appears in dropdowns</h3>
       <img class="diagram-img" src="assets/diagram-dropdowns.png" alt="Manager and sub-tenant dropdown population" />
-      <p class="diagram-cap">Manager = Assigned Users only. Sub-tenant = Command Tower book + people resolver (+ direct Assigned Users if no manager).</p>
+      <p class="diagram-cap">Manager = Assigned Users only. Sub-tenant = Command Tower scope + people resolver (+ direct Assigned Users if no manager).</p>
       <div class="mermaid">
 flowchart LR
   M[Manager] --> AU[Assigned Users] --> D1[Only those TC FA]
@@ -440,7 +440,7 @@ flowchart LR
         <article class="card">
           <div class="q">Visibility</div>
           <h3>Which cases?</h3>
-          <p>Book rules + team rules + Self / All Cases.</p>
+          <p>Command Tower rules + team rules + Self / All Cases.</p>
         </article>
       </div>
       <div class="formula">ACCESS = Authenticated Identity + Required Permission + Matching Visibility</div>
@@ -500,7 +500,7 @@ flowchart TB
       <h2>3. Solution architecture</h2>
       <p>
         Visibility is <strong>configured case scope</strong>, not “simulate hierarchy with agencies.”
-        Hierarchy-like outcomes (manager team, area book, admin all-cases) are expressed as rules.
+        Hierarchy-like outcomes (manager team, Command Tower scope, admin all-cases) are expressed as rules.
       </p>
       <div class="mermaid">
 flowchart TB
@@ -518,7 +518,7 @@ flowchart TB
         <tbody>
           <tr><td>Same column, multiple values</td><td><strong>OR</strong></td><td>Bucket B1 | B2</td></tr>
           <tr><td>Different columns, one row</td><td><strong>AND</strong></td><td>Product PL AND Agency Inhouse</td></tr>
-          <tr><td>Multiple rows, same user</td><td><strong>OR</strong></td><td>Team assignees OR product book</td></tr>
+          <tr><td>Multiple rows, same user</td><td><strong>OR</strong></td><td>Team assignees OR Command Tower product scope</td></tr>
         </tbody>
       </table>
 
@@ -571,7 +571,7 @@ flowchart TB
           </tr>
           <tr>
             <td>Loan detail</td>
-            <td>May open cases outside intended book</td>
+            <td>May open cases outside intended Command Tower scope</td>
             <td>Deny if case fails visibility</td>
           </tr>
           <tr>
@@ -677,9 +677,9 @@ flowchart TB
             <td>Portfolio picker as security</td>
           </tr>
           <tr>
-            <td>Area / book admin (NCM/ZCM/RCM/ACM style)</td>
+            <td>Area / Command Tower admin (NCM/ZCM/RCM/ACM style)</td>
             <td>Yes + permissions</td>
-            <td>Product/Bucket/Agency (and later Branch) rows for their book</td>
+            <td>Product/Bucket/Agency (and later Branch) rows = Command Tower rules for their scope</td>
             <td>Assuming title alone grants loan filter</td>
           </tr>
         </tbody>
@@ -828,15 +828,15 @@ flowchart LR
           </tr>
           <tr>
             <td>ACM/RCM sees those people in <strong>dropdowns</strong></td>
-            <td>People resolver includes profiles listed on that CM’s Assigned Users <em>and/or</em> mapped under their Command Tower book without requiring a manager node</td>
+            <td>People resolver includes profiles listed on that CM’s Assigned Users <em>and/or</em> mapped under their Command Tower scope without requiring a manager node</td>
           </tr>
           <tr>
             <td>TC/FA own app / lists</td>
             <td>Still <strong>Self Assigned = Y</strong> — unchanged</td>
           </tr>
           <tr>
-            <td>Optional book overlap</td>
-            <td>ACM can also keep Product/Bucket/Agency rules from CT; Assigned Users covers the direct-report people path</td>
+            <td>Optional Command Tower rules overlap</td>
+            <td>ACM can also keep Command Tower rules (Product/Bucket/Agency from CT); Assigned Users covers the direct-report people path</td>
           </tr>
         </tbody>
       </table>
@@ -853,15 +853,15 @@ flowchart TB
       </div>
       <ul>
         <li><strong>Solved:</strong> no need to invent a dummy manager or a per-manager agency just to hang TC/FA under ACM/RCM.</li>
-        <li><strong>Mixed teams:</strong> same ACM can have some people via managers (CT book → manager → Assigned Users) and some via direct Assigned Users on the ACM.</li>
-        <li><strong>Command Tower:</strong> may still map ACM → Agency → Product/Bucket for the book; people without a manager are attached via Visibility Assigned Users on the ACM/RCM, not forced through a manager row in CT.</li>
+        <li><strong>Mixed teams:</strong> same ACM can have some people via managers (CT scope → manager → Assigned Users) and some via direct Assigned Users on the ACM.</li>
+        <li><strong>Command Tower:</strong> may still map ACM → Agency → Product/Bucket for the Command Tower scope; people without a manager are attached via Visibility Assigned Users on the ACM/RCM, not forced through a manager row in CT.</li>
       </ul>
 
       <h3>5A.2 Sub-tenant roles (NCM / ZCM / RCM / ACM) — dropdowns &amp; Command Tower</h3>
       <p>
-        Sub-tenant users are Tenant Admin–class profiles with a book of business
+        Sub-tenant users are Tenant Admin–class profiles with a Command Tower scope (book of business)
         (often aligned to NCM → ZCM → RCM → ACM). They need dropdowns for
-        <strong>child CMs, managers, telecallers, and field agents</strong> that sit under their book —
+        <strong>child CMs, managers, telecallers, and field agents</strong> that sit under their Command Tower scope —
         not the entire tenant directory.
       </p>
 
@@ -907,7 +907,7 @@ flowchart TB
           <tr>
             <td><strong>ACM</strong></td>
             <td>Agencies (and product/bucket) under this ACM</td>
-            <td>Managers / TC / FA linked to those agencies or to managers in that book — not tenant-wide</td>
+            <td>Managers / TC / FA linked to those agencies or to managers in that Command Tower scope — not tenant-wide</td>
           </tr>
           <tr>
             <td><strong>Primary Tenant Admin</strong> (no sub-role)</td>
@@ -935,14 +935,14 @@ flowchart TB
         <div class="flow-step">
           <div class="n">1</div>
           <div>
-            <strong>Book from Command Tower:</strong> from the logged-in CM id, read CT to get
+            <strong>Scope from Command Tower:</strong> from the logged-in CM id, read CT to get
             child CM ids + Agency (+ Product/Bucket) set for that subtree.
           </div>
         </div>
         <div class="flow-step">
           <div class="n">2</div>
             <div>
-              <strong>People from profiles:</strong> return Managers / Telecallers / Field Agents in that book —
+              <strong>People from profiles:</strong> return Managers / Telecallers / Field Agents in that Command Tower scope —
               (a) managers under the CT agencies, (b) TC/FA on those managers’ Assigned Users, and
               (c) TC/FA listed <strong>directly</strong> on the logged-in CM’s Assigned Users (no manager required).
             </div>
@@ -951,7 +951,7 @@ flowchart TB
           <div class="n">3</div>
           <div>
             <strong>Cases from Visibility:</strong> loan lists for the sub-tenant still use their
-            published Visibility rules (often Agency/Product/Bucket seeded from the same CT book).
+            published Visibility rules (often Agency/Product/Bucket Command Tower rules seeded from the same CT map).
             Selecting a person in a dropdown only <em>narrows</em> further; it cannot expand beyond Visibility.
           </div>
         </div>
@@ -964,14 +964,14 @@ flowchart TB
           <tr>
             <td>ZCM-West</td>
             <td>RCM-North, RCM-South → ACM-A, ACM-B → Agency Inhouse + Product PL…</td>
-            <td>Only those RCMs/ACMs; managers M1,M2 in that book; TC/FA on M1/M2 teams</td>
+            <td>Only those RCMs/ACMs; managers M1,M2 in that Command Tower scope; TC/FA on M1/M2 teams</td>
             <td>Visibility rules for ZCM-West (seeded from same agencies/products/buckets)</td>
           </tr>
           <tr>
             <td>ACM-A</td>
             <td>Agency set under ACM-A only</td>
-            <td>Managers/TC/FA in ACM-A book only — not RCM-South’s people</td>
-            <td>Narrower Visibility book</td>
+            <td>Managers/TC/FA in ACM-A Command Tower scope only — not RCM-South’s people</td>
+            <td>Narrower Command Tower rules</td>
           </tr>
         </tbody>
       </table>
@@ -1005,8 +1005,8 @@ flowchart TB
           </tr>
           <tr>
             <td>ACM / RCM / ZCM / NCM</td>
-            <td>TC/FA under their CT book</td>
-            <td>Managers under their CT book</td>
+            <td>TC/FA under their Command Tower scope</td>
+            <td>Managers under their Command Tower scope</td>
             <td>Child CMs from CT cascade</td>
             <td>Command Tower subtree + people resolver</td>
           </tr>
@@ -1096,9 +1096,9 @@ flowchart LR
         <div class="card">
           <h3>Command Tower</h3>
           <ul>
-            <li>Org / book-of-business map</li>
+            <li>Org / Command Tower map</li>
             <li>Useful for reporting drill-downs and ops reference</li>
-            <li>Can inform <em>what</em> Product/Bucket/Agency belong to a CM book</li>
+            <li>Can inform <em>what</em> Product/Bucket/Agency belong to a CM Command Tower scope</li>
             <li>May continue to be uploaded/maintained as today for reporting</li>
           </ul>
         </div>
@@ -1147,7 +1147,7 @@ flowchart LR
         <thead><tr><th>Need</th><th>Use Command Tower?</th><th>Use Visibility?</th></tr></thead>
         <tbody>
           <tr><td>Which ZCM/RCM/ACM options to show</td><td><strong>Yes</strong> — cascade from logged-in CM</td><td>No</td></tr>
-          <tr><td>Which agencies/products/buckets are in my book</td><td><strong>Yes</strong> — map</td><td>Also seeded into Visibility for case queries</td></tr>
+          <tr><td>Which agencies/products/buckets are in my Command Tower scope</td><td><strong>Yes</strong> — map</td><td>Also seeded into Visibility for case queries</td></tr>
           <tr><td>Which TC/FA appear for a manager</td><td>No</td><td><strong>Yes</strong> — Assigned Users</td></tr>
           <tr><td>Which TC/FA/managers appear for a ZCM/ACM</td><td><strong>Yes</strong> — subtree → people resolver</td><td>Cases still Visibility</td></tr>
           <tr><td>Which loans appear</td><td>Not as ACL</td><td><strong>Yes</strong> — authoritative</td></tr>
@@ -1159,7 +1159,7 @@ flowchart LR
         <li>Will not make Command Tower the sole ACL for case lists</li>
         <li>Will not require CT sync on every page load for security of loan rows</li>
         <li>Will not block hierarchy go-live on rebuilding CT as a full hierarchy engine</li>
-        <li>Will not show tenant-wide TC/FA lists to managers or to sub-tenants outside their CT book</li>
+        <li>Will not show tenant-wide TC/FA lists to managers or to sub-tenants outside their Command Tower scope</li>
       </ul>
       <p class="muted">
         If Godrej later wants automatic sync “CT change → Visibility draft,” that can be a later phase
@@ -1228,7 +1228,7 @@ flowchart TB
         <tbody>
           <tr><td>Field Agent</td><td>Pending / PTP / visits</td><td>Auth ok → Visibility SELF → only assigned loans</td></tr>
           <tr><td>Telecaller</td><td>All Cases / dialer lists</td><td>Visibility SELF → assigned loans</td></tr>
-          <tr><td>Manager</td><td>Team loans / Manager App</td><td>Visibility Assigned Users (± Product/Bucket) → team book</td></tr>
+          <tr><td>Manager</td><td>Team loans / Manager App</td><td>Visibility Assigned Users (± Command Tower rules) → team cases</td></tr>
           <tr><td>Tenant Admin</td><td>Dashboards / reports</td><td>All Cases → full tenant (explicit)</td></tr>
           <tr><td>Any user</td><td>Applies multi-select filters</td><td>Filters ∩ Visibility — never expands scope</td></tr>
         </tbody>
@@ -1313,7 +1313,7 @@ flowchart TB
       <h3>10.5 Assignment then collection</h3>
       <div class="mermaid">
 flowchart LR
-  L[Loan in book] --> A[Assign to FA or TC]
+  L[Loan in Command Tower scope] --> A[Assign to FA or TC]
   A --> S[Assignee stamped]
   S --> FA[FA/TC sees via SELF]
   S --> M[Manager sees via Assigned Users]
@@ -1345,7 +1345,7 @@ sequenceDiagram
   ST->>UI: Open hierarchy / people filters
   UI->>CT: Subtree for logged-in ZCM
   CT-->>UI: Child RCM ACM Agency Product Bucket
-  UI->>PR: Managers TC FA in that book
+  UI->>PR: Managers TC FA in that Command Tower scope
   PR-->>UI: Scoped people lists
   Note over UI: Loan query still uses Visibility rules for ST
       </div>
