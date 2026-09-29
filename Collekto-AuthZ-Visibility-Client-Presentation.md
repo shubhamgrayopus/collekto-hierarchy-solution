@@ -210,7 +210,9 @@ Request
 | Separate agency per manager to isolate hierarchy | Managers configured via **visibility rules** (e.g. Assigned Users, Product/Bucket) |
 | Portfolios multiplied as Managers × Product × Bucket | No need to create an agency per manager for access |
 | People access via portfolio membership under those agencies | People access via published visibility configuration |
-| Agency/product/bucket on loans | May remain as loan attributes if needed — not as the hierarchy workaround |
+| Agency/product/bucket on loans | Product/Bucket from LMS loan details; **Agency = Inhouse by default** in Collekto (not from LMS). Future external agencies via **Agency Allocation** page — not as the hierarchy workaround |
+
+**LMS vs Agency Allocation:** LMS provides **loan details only**. Agency is set in Collekto (`Inhouse` by default). A new **Agency Allocation** page is introduced so that, when Godrej later brings in an external agency, loans can be moved to that agency without returning to the multi-agency-per-manager model.
 
 ---
 

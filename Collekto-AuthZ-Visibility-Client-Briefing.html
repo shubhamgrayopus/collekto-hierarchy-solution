@@ -385,10 +385,13 @@ flowchart TB
 sequenceDiagram
   participant LMS
   participant Loan
+  participant AgencyAlloc as Agency Allocation
   participant ACM
   participant T1 as Telecaller
   participant M1 as Manager
-  LMS->>Loan: Stamp Product Bucket Agency
+  LMS->>Loan: Loan details only (e.g. Product Bucket)
+  Loan->>Loan: Agency defaults to Inhouse
+  Note over AgencyAlloc,Loan: Future external agency → Agency Allocation page
   Note over ACM,Loan: ACM sees via Command Tower rules even if unassigned
   Loan->>Loan: Assign worker T1
   Loan-->>T1: Self
@@ -539,24 +542,34 @@ flowchart TB
         <thead><tr><th>Dimension</th><th>Godrej now</th><th>Notes</th></tr></thead>
         <tbody>
           <tr><td><strong>Assignee</strong></td><td><span class="tag new">Primary</span></td><td>Self for TC/FA; lists for managers</td></tr>
-          <tr><td><strong>Product</strong></td><td><span class="tag new">Primary</span></td><td>From loan / LMS attributes</td></tr>
-          <tr><td><strong>Bucket</strong></td><td><span class="tag new">Primary</span></td><td>From loan / LMS attributes</td></tr>
-          <tr><td><strong>Agency</strong></td><td><span class="tag new">Supported</span></td><td>Prefer shared/inhouse agency — not one agency per manager</td></tr>
+          <tr><td><strong>Product</strong></td><td><span class="tag new">Primary</span></td><td>From LMS loan details</td></tr>
+          <tr><td><strong>Bucket</strong></td><td><span class="tag new">Primary</span></td><td>From LMS loan details</td></tr>
+          <tr><td><strong>Agency</strong></td><td><span class="tag new">Supported</span></td><td><strong>Default = Inhouse</strong> (not from LMS). Not one agency per manager. Future external agencies via Agency Allocation page</td></tr>
           <tr><td><strong>Branch</strong></td><td><span class="tag optional">Optional</span></td><td>Not used by Godrej today; column present, non-mandatory</td></tr>
           <tr><td><strong>All Cases</strong></td><td><span class="tag new">Admin</span></td><td>Explicit tenant-wide for primary Tenant Admin</td></tr>
         </tbody>
       </table>
 
       <h3>3.3 What this deliberately separates</h3>
-      <div class="grid-2">
+      <div class="grid-3">
         <div class="card">
           <h3>Visibility (this solution)</h3>
           <p>Which loans appear on lists, dashboards, reports, mobile home screens.</p>
         </div>
         <div class="card">
-          <h3>Assignment (related, separate)</h3>
+          <h3>Worker assignment</h3>
           <p>Who is allocated to work a loan (TC/FA). After assign, SELF visibility applies.</p>
         </div>
+        <div class="card">
+          <h3>Agency allocation</h3>
+          <p>Which agency owns the loan. Default <strong>Inhouse</strong>. New page for future external agencies — not driven by LMS.</p>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>LMS boundary:</strong> LMS sends <strong>loan details only</strong> (product, bucket, balances, customer fields, etc.).
+        It does <strong>not</strong> allocate agency. Agency is set in Collekto: <strong>Inhouse by default</strong>;
+        when Godrej later onboards an external agency, ops use the <strong>Agency Allocation</strong> page to move loans to that agency.
+        Today’s multi-agency setup exists only because of the per-manager agency workaround — that goes away with Visibility.
       </div>
     </section>
 
@@ -623,8 +636,13 @@ flowchart TB
           </tr>
           <tr>
             <td>LMS loan ingest</td>
-            <td>Risk of recreating agency×portfolio explosion</td>
-            <td>Stamp Product/Bucket/Agency on loan; do not create per-manager agency</td>
+            <td>Risk of recreating agency×portfolio explosion; agency tied to multi-agency workaround</td>
+            <td>LMS = loan details only; agency defaults to <strong>Inhouse</strong>; no per-manager agency on ingest</td>
+          </tr>
+          <tr>
+            <td>Agency allocation</td>
+            <td>Agency chosen via multi-agency / portfolio model today</td>
+            <td>New <strong>Agency Allocation</strong> page; keep Inhouse by default; assign to external agencies when Godrej brings them in</td>
           </tr>
           <tr>
             <td>SMS / Payment callbacks</td>
@@ -1087,7 +1105,7 @@ flowchart LR
         <tbody>
           <tr><td>User profile + role</td><td>CRM registration (DB)</td><td>Identity + Authorization</td></tr>
           <tr><td>Visibility rules</td><td>Excel / Visibility Admin</td><td>Case scope</td></tr>
-          <tr><td>Loan attributes</td><td>LMS sync / allocation</td><td>Match Product/Bucket/Agency/(Branch)/Assignee</td></tr>
+          <tr><td>Loan attributes</td><td>LMS sync (loan details) + Agency Allocation</td><td>Match Product/Bucket/Agency/(Branch)/Assignee — Agency defaults Inhouse, not from LMS</td></tr>
           <tr><td>Command Tower map</td><td>Existing CT / SEAM uploads</td><td>Org reference + optional seed of Command Tower rules</td></tr>
           <tr><td>Assignment actions</td><td>Allocator / manager in CRM or app</td><td>Updates assignee → SELF visibility</td></tr>
         </tbody>
@@ -1216,8 +1234,9 @@ flowchart TB
     Rules[Published rules version N]
   end
   subgraph loans [Loans]
-    LMS[LMS sync stamps Product Bucket Agency Assignee]
-    Attr[Loan attributes]
+    LMS[LMS sync: loan details only]
+    AgencyDef[Agency = Inhouse default]
+    Attr[Loan attributes + optional Agency Allocation]
   end
   subgraph apps [Apps]
     Web[CRM Web]
@@ -1226,6 +1245,7 @@ flowchart TB
   end
   Users --> Rules
   LMS --> Attr
+  AgencyDef --> Attr
   Rules --> Web
   Rules --> MA
   Rules --> FA
@@ -1256,8 +1276,9 @@ flowchart TB
       <h3>9.4 What Godrej continues doing</h3>
       <ul>
         <li>Maintaining product/bucket masters</li>
-        <li>Using LMS as loan source (replacing import)</li>
+        <li>Using LMS as loan-details source (replacing import) — agency not from LMS</li>
         <li>Assigning collectors/field agents to loans</li>
+        <li>Keeping Agency = Inhouse by default; Agency Allocation page ready for future external agencies</li>
         <li>Optionally keeping Command Tower for org/reporting maps</li>
         <li>Publishing Visibility workbooks when teams or Command Tower rules change</li>
       </ul>
@@ -1314,12 +1335,35 @@ flowchart TB
 
       <h3>10.4 LMS loan arrives (replaces import)</h3>
       <img class="diagram-img" src="assets/diagram-loan-visibility-flow.png" alt="Loan visibility after LMS and assignment" />
+      <div class="callout">
+        <strong>LMS scope:</strong> LMS provides <strong>loan details only</strong>. Agency is <strong>not</strong> allocated from LMS.
+      </div>
       <div class="flow-steps">
-        <div class="flow-step"><div class="n">1</div><div>LMS upserts loan by external id</div></div>
-        <div class="flow-step"><div class="n">2</div><div>Stamp Product, Bucket, Agency (Branch only if present later)</div></div>
-        <div class="flow-step"><div class="n">3</div><div>Assignee empty or set per LMS/allocation policy</div></div>
-        <div class="flow-step"><div class="n">4</div><div>Visible automatically to users whose rules match attributes / assignees</div></div>
-        <div class="flow-step"><div class="n">5</div><div><strong>Do not</strong> create per-manager agency as part of ingest</div></div>
+        <div class="flow-step"><div class="n">1</div><div>LMS upserts loan by external id with loan details (product, bucket, customer, balances, etc.)</div></div>
+        <div class="flow-step"><div class="n">2</div><div>Collekto sets <strong>Agency = Inhouse</strong> by default (no per-manager agency)</div></div>
+        <div class="flow-step"><div class="n">3</div><div>Assignee empty until worker assignment (TC/FA) in CRM / apps</div></div>
+        <div class="flow-step"><div class="n">4</div><div>Visible automatically to users whose Visibility rules match attributes / assignees</div></div>
+        <div class="flow-step"><div class="n">5</div><div><strong>Do not</strong> create agencies or portfolios as part of LMS ingest</div></div>
+      </div>
+
+      <h3>10.4a Agency Allocation page (new)</h3>
+      <p>
+        Today, Godrej runs a <strong>multiple-agency model</strong> as part of the temporary per-manager workaround.
+        With Visibility, that goes away for access: keep a single shared agency — <strong>Inhouse</strong> — as the default on loans.
+      </p>
+      <div class="flow-steps">
+        <div class="flow-step"><div class="n">1</div><div>Introduce an <strong>Agency Allocation</strong> page in CRM (separate from Visibility and from TC/FA assignment)</div></div>
+        <div class="flow-step"><div class="n">2</div><div>Steady state: loans stay on <strong>Inhouse</strong>; no allocation hop required for normal Godrej ops</div></div>
+        <div class="flow-step"><div class="n">3</div><div>Future: if Godrej onboards an external agency, ops use Agency Allocation to move selected loans to that agency</div></div>
+        <div class="flow-step"><div class="n">4</div><div>Visibility Command Tower rules can still match on Agency when external agencies exist — without recreating per-manager agencies</div></div>
+      </div>
+      <div class="mermaid">
+flowchart LR
+  LMS[LMS: loan details only] --> Loan[Loan]
+  Loan --> Def[Agency = Inhouse default]
+  Def --> Keep[Stay Inhouse]
+  Def --> Page[Agency Allocation page]
+  Page --> Ext[Future external agency]
       </div>
 
       <h3>10.5 Assignment then collection</h3>
@@ -1412,13 +1456,14 @@ sequenceDiagram
         <li>MIS/report row security on Visibility</li>
         <li>Batch jobs that assume per-manager agency reviewed</li>
         <li>SMS / Payment / LMS posting: loan-id based; remove brittle portfolio assumptions</li>
-        <li>LMS ingest aligned: attribute stamp, no agency-per-manager creation</li>
+        <li>LMS ingest: loan details only; Agency = Inhouse default; no per-manager agency side effects</li>
+        <li>Agency Allocation page: ship for future external-agency moves (steady state = Inhouse)</li>
       </ul>
 
       <h3>Phase 6 — Retire temporary hierarchy workaround <span class="tag phase">Retire</span></h3>
       <ul>
         <li>Stop creating agencies per manager for access</li>
-        <li>Collapse to shared/inhouse agency model for ops where agreed</li>
+        <li>Collapse to <strong>Inhouse</strong> as the default agency; use Agency Allocation only when external agencies exist</li>
         <li>Command Tower remains optional for org/reporting only</li>
         <li>Document steady-state onboarding SOP for Godrej ops</li>
       </ul>
@@ -1437,12 +1482,13 @@ sequenceDiagram
         <tbody>
           <tr><td>Dashboard</td><td>All widgets query with Visibility Context; multi-select filters only narrow</td></tr>
           <tr><td>Loan pages</td><td>List/detail/search enforce Visibility; remove portfolio membership as ACL</td></tr>
-          <tr><td>Loan assignment</td><td>Separate APIs; assignee stamp; manager assign limited to visible loans + permitted targets</td></tr>
+          <tr><td>Loan assignment</td><td>Separate APIs; assignee stamp (TC/FA); manager assign limited to visible loans + permitted targets</td></tr>
+          <tr><td>Agency Allocation</td><td>New page; default Inhouse on LMS ingest; assign to external agency when Godrej brings one in — not from LMS</td></tr>
           <tr><td>Reporting</td><td>Row scope = Visibility; formula changes only where business requires</td></tr>
           <tr><td>Filters</td><td>Multi-select Product/Bucket/Agency/Assignee; Branch hidden until enabled; ∩ Visibility</td></tr>
           <tr><td>Settlement</td><td>Create on visible loan; lists/approvals via Visibility + AuthZ</td></tr>
           <tr><td>SMS / Payment</td><td>Trigger from allowed loan actions; callbacks by payment/loan id</td></tr>
-          <tr><td>LMS</td><td>Ingest attributes; posting integrations unchanged in spirit; no per-manager agency side effects</td></tr>
+          <tr><td>LMS</td><td>Loan details only; no agency allocation from LMS; Inhouse default in Collekto; no per-manager agency side effects</td></tr>
           <tr><td>Command Tower</td><td>Seed + reporting reference; not runtime ACL</td></tr>
         </tbody>
       </table>

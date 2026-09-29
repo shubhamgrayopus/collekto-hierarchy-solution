@@ -92,7 +92,8 @@ sequenceDiagram
   participant Alloc as Allocator / Manager
   participant T1 as Telecaller T1
   participant M1 as Manager M1
-  LMS->>Loan: Stamp Product, Bucket, Agency
+  LMS->>Loan: Loan details only (Product, Bucket, …)
+  Loan->>Loan: Agency = Inhouse (default in Collekto)
   Note over ACM,Loan: ACM sees via Command Tower rules even if unassigned
   Alloc->>Loan: Assign worker = T1
   Loan-->>T1: T1 sees via SELF
@@ -101,6 +102,8 @@ sequenceDiagram
 ```
 
 **Important:** the loan is assigned to the **telecaller/FA only**. Managers and ACMs **see** it through Visibility — they are not dual-assignees on the loan.
+
+**LMS / Agency:** LMS sends **loan details only**. Agency is **not** allocated from LMS. Going forward, agency defaults to **Inhouse**. A new **Agency Allocation** page will assign loans to an external agency if Godrej brings one in later. Today’s multi-agency model exists only because of the temporary per-manager agency workaround.
 
 ---
 
@@ -384,10 +387,11 @@ Portfolio picker is demoted or removed as a security boundary on both platforms.
 | Feature | Impact |
 |---------|--------|
 | Loan pages / dashboards / reports | Visibility scope |
-| Assignment | Worker only; viewers via rules |
+| Assignment | Worker only (TC/FA); viewers via rules |
+| Agency Allocation | New page; default Inhouse; future external agencies — not from LMS |
 | Filters multi-select | ∩ Visibility |
 | Settlement | Via visible loan + AuthZ |
-| LMS ingest | Stamp attributes; no per-manager agency |
+| LMS ingest | Loan details only; Agency = Inhouse in Collekto; no per-manager agency |
 | SMS / Payment | Loan-id callbacks; not hierarchy ACL |
 
 ---
