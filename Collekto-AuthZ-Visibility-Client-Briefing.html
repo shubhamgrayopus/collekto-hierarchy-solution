@@ -683,7 +683,7 @@ flowchart TB
       </table>
 
       <div class="callout">
-        <strong>Default automation (recommended):</strong> on create of Telecaller / Field Agent,
+        <strong>Default automation:</strong> on create of Telecaller / Field Agent,
         system auto-adds <em>Self Assigned = Yes</em> into a draft visibility set (still published with audit).
         Manager team links are maintained via Assigned Users on the manager’s rules.
       </div>
@@ -1231,30 +1231,127 @@ flowchart TB
   Attr --> FA
       </div>
 
-      <h3>9.2 Day in the life</h3>
+      <h3>9.2 One agency (Inhouse) — ACM / manager scope</h3>
+      <p>
+        Godrej operates with <strong>one agency: Inhouse</strong>. All agents and managers sit under that agency.
+        Agency is <strong>not</strong> used to isolate ACM or manager teams. Management scope comes from
+        Visibility <strong>Assigned Users</strong>.
+      </p>
+      <table>
+        <thead><tr><th>Layer</th><th>Godrej reality</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Agency</strong></td><td>One value — <strong>Inhouse</strong> — on (almost) every loan. Shared by everyone.</td></tr>
+          <tr><td><strong>Who sees what</strong></td><td>Visibility rules — mainly <strong>Assigned Users</strong> (and Self for TC/FA).</td></tr>
+          <tr><td><strong>ACM management view</strong></td><td>Only their assigned managers and/or TC/FA — configured on that ACM’s Assigned Users list.</td></tr>
+          <tr><td><strong>Manager team</strong></td><td>Same pattern one level down: manager Assigned Users = their TC/FA.</td></tr>
+          <tr><td><strong>Old interim</strong></td><td>Separate agency per manager → <span class="tag retire">Retire</span>. Everyone stays under Inhouse.</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <strong>Do not</strong> give an ACM only <em>Agency = Inhouse</em> (or tenant-wide Product/Bucket).
+        With a single agency that is effectively everyone.
+        For ACM management view, <strong>Assigned Users is the primary scope</strong>.
+      </div>
+      <div class="mermaid">
+flowchart TB
+  Inhouse[Agency Inhouse — shared]
+  ACMA[ACM-A Assigned Users = M1 M2 T1 F1]
+  ACMB[ACM-B Assigned Users = M3 T5 F2]
+  Inhouse --> ACMA
+  Inhouse --> ACMB
+  ACMA --> TeamA[Only ACM-A team cases and people]
+  ACMB --> TeamB[Only ACM-B team cases and people]
+      </div>
+
+      <h3>9.3 First-level allocation — who assigns, flow to agent</h3>
+      <p>
+        For Godrej day-1 ops, <strong>first-level allocation = assign the loan to a worker (TC/FA)</strong>.
+        Agency is already Inhouse on LMS ingest — there is no agency hop in normal ops.
+      </p>
+      <table>
+        <thead><tr><th>Need</th><th>Who</th><th>What they must have</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Permission</strong></td>
+            <td>Manager / ACM / Admin (whichever roles are granted)</td>
+            <td>Assign permission (e.g. <code>CASE_ASSIGN</code>)</td>
+          </tr>
+          <tr>
+            <td><strong>See unassigned pool</strong></td>
+            <td>Same person</td>
+            <td>Visibility <strong>Product + Bucket</strong> (+ Agency Inhouse) — Assigned Users alone cannot surface unassigned loans</td>
+          </tr>
+          <tr>
+            <td><strong>Pick the worker</strong></td>
+            <td>Same person</td>
+            <td>Assign dropdown = their <strong>Assigned Users</strong> roster only</td>
+          </tr>
+          <tr>
+            <td><strong>Receive work</strong></td>
+            <td>Telecaller / Field Agent</td>
+            <td>Self Assigned = Yes — they do not allocate the pool</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="n">1</div>
+          <div><strong>LMS sync:</strong> loan details (product, bucket, …); Agency = Inhouse; <strong>Assignee empty</strong> → unassigned pool.</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">2</div>
+          <div><strong>Allocator</strong> (Manager or ACM with assign rights) opens CRM / Manager App → sees unassigned loans matching their Product+Bucket rules.</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">3</div>
+          <div><strong>Assign:</strong> dropdown shows only their Assigned Users (TC/FA). Loan assignee stamped to the <strong>worker only</strong> — not dual-assignee with Manager/ACM.</div>
+        </div>
+        <div class="flow-step">
+          <div class="n">4</div>
+          <div><strong>After assign:</strong> agent sees via Self; their manager/ACM sees via Assigned Users; agent works disposition / visit / payment / settlement.</div>
+        </div>
+      </div>
+      <div class="mermaid">
+flowchart LR
+  LMS[LMS: details only] --> Pool[Agency Inhouse · Assignee empty]
+  Pool --> Alloc[Allocator with CASE_ASSIGN + Product Bucket visibility]
+  Alloc --> Pick[Pick TC or FA from Assigned Users]
+  Pick --> Stamp[Assignee = worker only]
+  Stamp --> Agent[Agent sees via SELF]
+  Stamp --> Mgr[Manager or ACM sees via Assigned Users]
+      </div>
+      <div class="callout">
+        <strong>Not first-level allocation:</strong> Agency Allocation page (stays Inhouse for normal Godrej);
+        Visibility publish (sets who may see / allocate — does not put a loan on an agent);
+        putting ACM/Manager as loan assignee (they supervise via Visibility).
+      </div>
+
+      <h3>9.4 Day in the life</h3>
       <table>
         <thead><tr><th>User</th><th>Opens</th><th>System behaviour</th></tr></thead>
         <tbody>
           <tr><td>Field Agent</td><td>Pending / PTP / visits</td><td>Auth ok → Visibility SELF → only assigned loans</td></tr>
           <tr><td>Telecaller</td><td>All Cases / dialer lists</td><td>Visibility SELF → assigned loans</td></tr>
           <tr><td>Manager</td><td>Team loans / allocate / Manager App</td><td>Assigned Users for team cases; Product+Bucket (+ Agency) required to see unassigned loans to allocate</td></tr>
+          <tr><td>ACM</td><td>Management view / allocate (if granted)</td><td>Assigned Users = their managers and/or TC/FA only — not all of Inhouse; Product+Bucket if they allocate unassigned</td></tr>
           <tr><td>Tenant Admin</td><td>Dashboards / reports</td><td>All Cases → full tenant (explicit)</td></tr>
           <tr><td>Any user</td><td>Applies multi-select filters</td><td>Filters ∩ Visibility — never expands scope</td></tr>
         </tbody>
       </table>
 
-      <h3>9.3 What Godrej stops doing</h3>
+      <h3>9.5 What Godrej stops doing</h3>
       <ul>
         <li>Creating a new agency for every new manager (for access)</li>
         <li>Creating Product×Bucket portfolios under each manager agency only to grant access</li>
         <li>Treating portfolio membership as the ACL for people</li>
+        <li>Using Agency = Inhouse alone to define ACM / manager management scope</li>
       </ul>
 
-      <h3>9.4 What Godrej continues doing</h3>
+      <h3>9.6 What Godrej continues doing</h3>
       <ul>
         <li>Maintaining product/bucket masters</li>
         <li>Using LMS as loan-details source (replacing import) — agency not from LMS</li>
-        <li>Assigning collectors/field agents to loans</li>
+        <li>Assigning collectors/field agents to loans (first-level allocation)</li>
         <li>Keeping Agency = Inhouse by default; Agency Allocation page ready for future external agencies</li>
         <li>Optionally keeping Command Tower for org/reporting maps</li>
         <li>Publishing Visibility workbooks when teams or Command Tower rules change</li>

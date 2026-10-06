@@ -1,0 +1,11 @@
+﻿# build workspace (deps + generated diagrams)
+.docx-build/
+node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+~$*
